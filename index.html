@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Travis McCormack · Data Quality & Analytics</title>
+  <meta name="description" content="Travis McCormack: data quality and analytics professional with 20 years of enterprise data work and 28 years in the fire service, 11 as Fire Chief.">
+  <meta property="og:title" content="Travis McCormack · Data Quality & Analytics">
+  <meta property="og:description" content="Python data quality frameworks, statistical monitoring and fire weather analytics.">
+  <meta property="og:url" content="https://travis-mccormack-analytics.com/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="#top">Travis McCormack<span>.</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#fit">Fire science fit</a>
+      <a href="#projects">Projects</a>
+      <a href="#demos">Fire analytics demos</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Data quality · Analytics · Fire service</div>
+      <h1>Trustworthy data for <em>decisions that matter</em>.</h1>
+      <p class="lede">I build Python frameworks that check, monitor and explain data, and I spent 28 years in the
+        volunteer fire service, 11 of them as Fire Chief. I'd like to put both to work on the data and analysis
+        behind wildland fire science and planning in Ontario.</p>
+      <div class="cta">
+        <a class="btn primary" href="#demos">Try the fire weather demos</a>
+        <a class="btn" href="#projects">See project work</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>~20 yrs</b><span>enterprise data work at OLG</span></div>
+        <div class="stat"><b>28 yrs</b><span>volunteer fire service</span></div>
+        <div class="stat"><b>11 yrs</b><span>as Fire Chief, Searchmont VFD</span></div>
+        <div class="stat"><b>B.Sc.</b><span>Mathematics &amp; Computer Science, cum laude</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fit" class="alt">
+    <div class="wrap">
+      <div class="eyebrow">Why fire science and planning</div>
+      <h2>Where my experience meets the work</h2>
+      <p class="section-intro">Fire science and planning depends on large, long-running datasets: fire weather
+        station observations, fire occurrence records, fuel and landscape data, and the indices and models built on
+        them. These are the needs I see in that work, matched to what I have already done.</p>
+      <div class="map-grid">
+        <div class="map-card">
+          <h3><span class="n">01</span>Reliable fire weather and occurrence data</h3>
+          <p>Missing observations, flat-lined sensors and drifting instruments flow straight into FWI codes and
+            planning models. Catching them early is a data quality problem.</p>
+          <span class="from">From: enterprise DQ framework, observability and drift detection</span>
+        </div>
+        <div class="map-card">
+          <h3><span class="n">02</span>Programming for analysis and models</h3>
+          <p>Turning published equations and methods into tested, repeatable Python, then running them at scale on
+            years of historical data.</p>
+          <span class="from">From: config-driven Python frameworks, synthetic test data and seeded history</span>
+        </div>
+        <div class="map-card">
+          <h3><span class="n">03</span>Results people can act on</h3>
+          <p>Planners, managers and field staff need clear summaries, not raw tables. One place to see data health
+            and results, with the detail one click away.</p>
+          <span class="from">From: central results database, Flask web applications</span>
+        </div>
+        <div class="map-card">
+          <h3><span class="n">04</span>Training and knowledge exchange</h3>
+          <p>Methods only help when people understand and trust them. I have built training for data stewards and
+            taught firefighters as a certified instructor.</p>
+          <span class="from">From: DQ learning portal, NFPA 1041 instructor</span>
+        </div>
+        <div class="map-card">
+          <h3><span class="n">05</span>Field perspective</h3>
+          <p>I held incident command at fire, rescue and hazmat incidents, communicated fire bans to residents, and
+            coordinated with MNR fire staff, the OPP and mutual aid partners.</p>
+          <span class="from">From: Fire Chief, Searchmont Community VFD</span>
+        </div>
+        <div class="map-card">
+          <h3><span class="n">06</span>Working inside a public agency</h3>
+          <p>Nearly 20 years in an Ontario provincial agency: governance, standards, change management and
+            delivering through business and IT teams.</p>
+          <span class="from">From: Ontario Lottery and Gaming Corporation</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="eyebrow">Selected project work</div>
+      <h2>Projects</h2>
+      <p class="section-intro">Recent work from my role as Senior Data Quality Analyst at OLG. The code and data
+        belong to OLG, so these are summaries of the design and results. The <a href="#demos">demos below</a> show
+        the same methods applied to fire weather data.</p>
+
+      <div class="projects">
+
+        <article class="project">
+          <div>
+            <span class="tag">Python · Cloudera AI</span>
+            <h3>Config-driven data quality framework</h3>
+            <p class="muted">Checks across thousands of critical data elements, defined in configuration rather
+              than hand-written code.</p>
+            <ul class="chips"><li>Python</li><li>Cloudera AI</li><li>Hive / Impala</li><li>Parquet</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>OLG's primary data quality tool was unavailable during its migration to IBM
+              watsonx, but thousands of critical data elements (CDEs) still needed checking.</dd></div>
+            <div><dt>Approach</dt><dd>Championed, designed and built a Python framework on Cloudera AI where each
+              check is declared in configuration. Adding coverage means adding a config entry, not writing a new
+              script. Rules and alerts were validated against synthetic source data and seeded history before
+              reaching production.</dd></div>
+            <div><dt>Result</dt><dd>Data quality coverage continued through the tool migration, with one
+              consistent way to define, run and report checks.</dd></div>
+          </dl>
+        </article>
+
+        <article class="project">
+          <div>
+            <span class="tag">Statistics · Monitoring</span>
+            <h3>Data observability and drift detection</h3>
+            <p class="muted">A baseline layer that watches every column every day and flags what has changed.</p>
+            <ul class="chips"><li>Python</li><li>Time series</li><li>z-score detection</li><li>Data profiling</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Hand-written rules only catch the problems someone thought of in advance.</dd></div>
+            <div><dt>Approach</dt><dd>Built daily column-level metrics (row counts, null rates, distinct counts,
+              mean and standard deviation) and used z-scores to flag drift from each column's own historical
+              norm.</dd></div>
+            <div><dt>Result</dt><dd>Broad, low-effort monitoring across the data lake, so expert effort could go to
+              the highest-risk data.</dd></div>
+          </dl>
+          <div class="fire-link" style="grid-column:1/-1"><b>In fire science:</b> the same technique catches a
+            drifting temperature sensor or a stuck humidity probe at a fire weather station before it skews the
+            FWI codes. <a href="#qc-demo">See it working →</a></div>
+        </article>
+
+        <article class="project">
+          <div>
+            <span class="tag">Architecture · Strategy</span>
+            <h3>Enterprise DQ strategy and risk-tiered coverage</h3>
+            <p class="muted">A 14-section strategy and a three-layer control model that puts effort where the
+              risk is.</p>
+            <ul class="chips"><li>DAMA-DMBOK</li><li>COBIT</li><li>Risk tiering</li><li>Governance</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Writing one rule for every element across thousands of CDEs does not scale,
+              and spreads effort evenly regardless of risk.</dd></div>
+            <div><dt>Approach</dt><dd>Authored the enterprise data quality strategy (dimensions, controls,
+              monitoring, issue management, tooling, regulatory alignment, change management and a maturity
+              roadmap) and designed a three-layer control model:
+              <div class="layers">
+                <div class="layer l3"><b>Curated, governed rules</b><span>Deep, business-owned checks for Tier 1 critical data</span></div>
+                <div class="layer l2"><b>Automated baseline rules</b><span>Standard checks generated for every element in scope</span></div>
+                <div class="layer l1"><b>Observability monitoring</b><span>Daily metrics and drift detection across everything</span></div>
+              </div>
+            </dd></div>
+            <div><dt>Result</dt><dd>Business-led Tier 1 to 3 classification directs governed rules to the highest-risk
+              elements and automation to the rest. An Authoritative Data Source principle means curated rules run
+              once at the point of origin and downstream zones inherit the results.</dd></div>
+          </dl>
+        </article>
+
+        <article class="project">
+          <div>
+            <span class="tag">SQL Server · Flask</span>
+            <h3>Central DQ results database and coverage apps</h3>
+            <p class="muted">One view of data health, whichever tool ran the check.</p>
+            <ul class="chips"><li>MS SQL Server</li><li>Flask</li><li>HTML / CSS / JavaScript</li><li>Cloudera AI Workbench</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Results were scattered across Python checks, vendor reports and watsonx, each in
+              its own format.</dd></div>
+            <div><dt>Approach</dt><dd>Architected a central results database on MS SQL Server with a common schema
+              tagged by source system, and built Flask web applications on Cloudera AI Workbench to surface the
+              results, including coverage of critical data elements by the control model.</dd></div>
+            <div><dt>Result</dt><dd>Data owners and stewards get one place to see what is checked, what passed, and
+              where coverage is missing.</dd></div>
+          </dl>
+        </article>
+
+        <article class="project">
+          <div>
+            <span class="tag">Training · Web</span>
+            <h3>DQ learning portal (mini-LMS)</h3>
+            <p class="muted">A complete curriculum, written and built by me, to train data stewards and data
+              owners.</p>
+            <ul class="chips"><li>HTML / CSS / JavaScript</li><li>Docker</li><li>nginx</li><li>Instructional design</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>A data quality program only works if the people who own the data understand
+              their role in it.</dd></div>
+            <div><dt>Approach</dt><dd>Designed the portal and all of its content: 3 modules and 17 lessons
+              covering DQ principles, how data quality affects their work, their role in the process, the tooling,
+              and how the enterprise strategy fits together. Lessons combine written guides, scenario-based
+              quizzes, interactive practice games and progress tracking.</dd></div>
+            <div><dt>Result</dt><dd>A self-paced static site packaged in Docker with nginx, simple to host and run
+              anywhere.</dd></div>
+          </dl>
+        </article>
+
+        <article class="project">
+          <div>
+            <span class="tag">Migration · Testing</span>
+            <h3>Governance platform migration to IBM watsonx</h3>
+            <p class="muted">Moving rules and catalogue content from on-premises IBM InfoSphere to SaaS.</p>
+            <ul class="chips"><li>IBM watsonx.data intelligence</li><li>InfoSphere IGC</li><li>Synthetic test data</li></ul>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Moving years of glossary content and DQ rules to a new platform without losing
+              trust in the results.</dd></div>
+            <div><dt>Approach</dt><dd>Led the migration of IGC content and DQ rules, and designed a parallel test
+              environment with synthetic source data and seeded history.</dd></div>
+            <div><dt>Result</dt><dd>Rules and alerts are validated before they reach production.</dd></div>
+          </dl>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="demos" class="alt">
+    <div class="wrap">
+      <div class="eyebrow">Built for this site</div>
+      <h2>Fire analytics demos</h2>
+      <p class="section-intro">Small, working examples of my approach applied to fire weather data. The FWI
+        calculations follow Van Wagner (1987), the published equations for the Canadian Forest Fire Weather Index
+        System. All weather data here is synthetic, generated in your browser.</p>
+
+      <div class="demo" id="calc-demo">
+        <div class="demo-head">
+          <div>
+            <h3>Daily FWI calculator</h3>
+            <p>Enter a noon weather observation and yesterday's moisture codes to get today's six FWI System
+              components.</p>
+          </div>
+        </div>
+        <div class="calc">
+          <form id="fwi-form" onsubmit="return false">
+            <fieldset>
+              <legend>Noon observation</legend>
+              <div class="fields">
+                <label>Temperature (°C)<input name="temp" type="number" step="0.1" value="17"></label>
+                <label>Relative humidity (%)<input name="rh" type="number" step="1" min="0" max="100" value="42"></label>
+                <label>Wind speed (km/h)<input name="wind" type="number" step="1" min="0" value="25"></label>
+                <label>24 h rain (mm)<input name="rain" type="number" step="0.1" min="0" value="0"></label>
+                <label>Month
+                  <select name="month">
+                    <option value="4" selected>April</option><option value="5">May</option><option value="6">June</option>
+                    <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                    <option value="10">October</option>
+                  </select>
+                </label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Yesterday's codes (spring start-up values shown)</legend>
+              <div class="fields">
+                <label>FFMC<input name="pffmc" type="number" step="0.1" value="85"></label>
+                <label>DMC<input name="pdmc" type="number" step="0.1" value="6"></label>
+                <label>DC<input name="pdc" type="number" step="0.1" value="15"></label>
+              </div>
+            </fieldset>
+          </form>
+          <div>
+            <div id="fwi-out" aria-live="polite"></div>
+            <p class="muted" style="font-size:.85rem;margin-top:12px">The default inputs are day one of Van Wagner's
+              published test data, so the output can be checked against the reference values.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo" id="season-demo">
+        <div class="demo-head">
+          <div>
+            <h3>A fire season, day by day</h3>
+            <p>A synthetic April to September season run through the FWI System from spring start-up. Move the
+              slider to make the season drier and watch the Drought Code build and danger classes shift. Hover over
+              the chart for daily values.</p>
+          </div>
+          <div class="controls">
+            <label>Season dryness<input id="season-dry" type="range" min="0" max="1" step="0.05" value="0.3"></label>
+            <button class="btn" id="season-new" type="button">New season</button>
+          </div>
+        </div>
+        <div class="chart-box">
+          <canvas id="season-chart" role="img" aria-label="Line chart of daily Fire Weather Index for a synthetic April to September season, shaded by danger class"></canvas>
+          <div class="tip" id="season-tip" hidden></div>
+        </div>
+        <div id="season-summary"></div>
+      </div>
+
+      <div class="demo" id="qc-demo">
+        <div class="demo-head">
+          <div>
+            <h3>Data quality checks on a fire weather station</h3>
+            <p>Three weeks of hourly temperature and humidity from a synthetic station, with realistic faults mixed
+              in: a data gap, a flat-lined humidity sensor, an impossible reading, a temperature spike and a slowly
+              drifting sensor. The checks are the same kinds I run on enterprise data.</p>
+          </div>
+          <div class="controls">
+            <span class="legend-flag"><i></i>Flagged</span>
+            <button class="btn" id="qc-new" type="button">New station feed</button>
+          </div>
+        </div>
+        <div class="qc-grid">
+          <div>
+            <p class="chart-title">Air temperature (°C)</p>
+            <canvas id="qc-temp" role="img" aria-label="Hourly temperature with flagged records circled"></canvas>
+            <p class="chart-title" style="margin-top:12px">Relative humidity (%)</p>
+            <canvas id="qc-rh" role="img" aria-label="Hourly relative humidity with flagged records circled"></canvas>
+          </div>
+          <div>
+            <table id="qc-table">
+              <thead><tr><th>Dimension</th><th>Check</th><th>Failed</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <p id="qc-score"></p>
+          </div>
+        </div>
+        <details>
+          <summary>Why this matters for FWI</summary>
+          <p>The FWI moisture codes carry memory: the Duff Moisture Code and Drought Code build on every previous
+            day. One bad noon humidity reading changes today's codes, and that error is carried into the codes for
+            weeks afterwards. A flat-lined sensor or a slow drift is worse, because it looks normal. Checks like
+            these, run before the codes are calculated, protect everything downstream: danger ratings,
+            preparedness levels and the historical record used for planning and research.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <div class="eyebrow">Background</div>
+      <h2>Experience</h2>
+      <div class="timeline">
+        <div class="job">
+          <div class="when">2013 – 2026</div>
+          <div><h3>Senior Data Quality Analyst · OLG</h3>
+            <p>Helped build Data Governance from the ground up, supported the move to IBM InfoSphere and a new
+              Cloudera data lake, then authored the enterprise DQ strategy and built its Python technical core.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">2011 – 2013</div>
+          <div><h3>Environment Provisioning Analyst · OLG</h3>
+            <p>Led a multi-environment model for the Customer Hub (Siebel) master data project, and enabled SIT and
+              UAT for OLG's electronic bingo line of business.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">2007 – 2011</div>
+          <div><h3>Quality Assurance Analyst and Voice Network Analyst · OLG</h3>
+            <p>Led an upgrade of defect management software for all testing teams, letting OLG retire a second
+              vendor's tool.</p></div>
+        </div>
+        <div class="job">
+          <div class="when">1995 – 2023</div>
+          <div><h3>Fire Chief (2012 – 2023) and Firefighter · Searchmont Community VFD</h3>
+            <p>Led a 21-person volunteer department with incident command at fire, rescue, hazmat and medical calls.
+              Coordinated with the Ministry of Natural Resources, the Office of the Fire Marshal, the OPP, paramedic
+              services and mutual aid partners. Secretary of the Algoma Mutual Aid Association (26 departments).</p></div>
+        </div>
+        <div class="job">
+          <div class="when">2006 – 2009</div>
+          <div><h3>B.Sc. Mathematics and Computer Science · Algoma University</h3>
+            <p>Graduated cum laude, with the Graduating Class Award of Excellence in Mathematics.</p></div>
+        </div>
+      </div>
+
+      <div class="skills">
+        <div class="skill"><h3>Programming</h3><ul>
+          <li>Python: frameworks, statistical checks, pipelines</li>
+          <li>SQL: MS SQL Server, Sybase, DB2, Hive, Impala</li>
+          <li>Flask web apps with HTML, CSS, JavaScript</li></ul></div>
+        <div class="skill"><h3>Analytics and statistics</h3><ul>
+          <li>Data profiling and time series metrics</li>
+          <li>z-score anomaly and drift detection</li>
+          <li>Root-cause analysis, fitness-for-purpose assessment</li></ul></div>
+        <div class="skill"><h3>Data platforms and tools</h3><ul>
+          <li>Cloudera Data Platform, Hadoop, Parquet</li>
+          <li>IBM watsonx.data intelligence, InfoSphere, Informatica DQ</li>
+          <li>Power BI, Cognos BI, Alteryx</li></ul></div>
+        <div class="skill"><h3>Fire service and training</h3><ul>
+          <li>IMS 100, NFPA 1021 Fire Officer I</li>
+          <li>NFPA 1041 Instructor, NFPA 1072 Hazmat</li>
+          <li>Ontario Fire College legislation courses</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="alt contact">
+    <div class="wrap">
+      <h2>Let's talk</h2>
+      <p>I'm interested in programming and analytics roles in fire science and planning, now or in the future.
+        References are available from the Ministry of Natural Resources (Fire Science and Planning), paramedic
+        services, the OPP and OLG.</p>
+      <div class="cta">
+        <a class="btn primary" href="mailto:carrie.aiden.travis@gmail.com">Email me</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Travis C.W. McCormack · Searchmont, Ontario</span>
+    <span>Demo data is synthetic. FWI equations: Van Wagner, C.E. (1987), Forestry Technical Report 35.</span>
+  </div>
+</footer>
+
+<script src="js/fwi.js"></script>
+<script src="js/demos.js"></script>
+</body>
+</html>
