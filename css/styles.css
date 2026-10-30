@@ -120,6 +120,10 @@ section.alt { background: var(--surface-2); }
 .fire-link b { color: var(--accent); }
 .note { font-size: .88rem; color: var(--muted); margin-top: 20px; }
 
+.shot { grid-column: 1 / -1; margin: 0; }
+.shot img { width: 100%; height: auto; display: block; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+.shot figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+
 /* Diagram */
 .layers { display: grid; gap: 8px; margin-top: 4px; }
 .layer { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface-2); }

@@ -72,7 +72,7 @@
           <h3><span class="n">03</span>Results people can act on</h3>
           <p>Planners, managers and field staff need clear summaries, not raw tables. One place to see data health
             and results, with the detail one click away.</p>
-          <span class="from">From: central results database, Flask web applications</span>
+          <span class="from">From: central results database, Data Quality Portal</span>
         </div>
         <div class="map-card">
           <h3><span class="n">04</span>Training and knowledge exchange</h3>
@@ -112,17 +112,22 @@
             <h3>Config-driven data quality framework</h3>
             <p class="muted">Checks across thousands of critical data elements, defined in configuration rather
               than hand-written code.</p>
-            <ul class="chips"><li>Python</li><li>Cloudera AI</li><li>Hive / Impala</li><li>Parquet</li></ul>
+            <ul class="chips"><li>Python</li><li>YAML config</li><li>Impala</li><li>MS SQL Server</li><li>SQLite</li><li>CLI</li></ul>
           </div>
           <dl>
             <div><dt>Problem</dt><dd>OLG's primary data quality tool was unavailable during its migration to IBM
               watsonx, but thousands of critical data elements (CDEs) still needed checking.</dd></div>
-            <div><dt>Approach</dt><dd>Championed, designed and built a Python framework on Cloudera AI where each
-              check is declared in configuration. Adding coverage means adding a config entry, not writing a new
-              script. Rules and alerts were validated against synthetic source data and seeded history before
-              reaching production.</dd></div>
-            <div><dt>Result</dt><dd>Data quality coverage continued through the tool migration, with one
-              consistent way to define, run and report checks.</dd></div>
+            <div><dt>Approach</dt><dd>Championed, designed and built a Python framework on Cloudera AI. A single YAML
+              file is the source of truth for every CDE: its table and column, risk tier, owner, validity pattern
+              and thresholds. Completeness thresholds default by tier (95%, 90% and 80%) and can be overridden per
+              element. A command-line scheduler runs daily checks by mode, tier or element and returns a failing
+              exit code so alerting pipelines can react.</dd></div>
+            <div><dt>Testing</dt><dd>It runs locally on SQLite and switches to Impala sources and an MS SQL Server
+              results database by editing one environment file, with no code changes. Seed scripts create
+              synthetic data with known, planted problems and the expected result for each check, so the framework
+              is proven against a known answer before it touches production.</dd></div>
+            <div><dt>Result</dt><dd>Data quality coverage continued through the tool migration. Adding a CDE means
+              adding a config entry, not writing a new script.</dd></div>
           </dl>
         </article>
 
@@ -136,8 +141,10 @@
           <dl>
             <div><dt>Problem</dt><dd>Hand-written rules only catch the problems someone thought of in advance.</dd></div>
             <div><dt>Approach</dt><dd>Built daily column-level metrics (row counts, null rates, distinct counts,
-              mean and standard deviation) and used z-scores to flag drift from each column's own historical
-              norm.</dd></div>
+              min and max) and used z-scores against a 30-day rolling baseline to flag drift from each column's own
+              norm, at high, medium and low severity. A 7-day burn-in keeps new elements from raising alerts before
+              a baseline exists. In testing it catches a null-rate spike, a row-count drop and a collapse in
+              distinct values.</dd></div>
             <div><dt>Result</dt><dd>Broad, low-effort monitoring across the data lake, so expert effort could go to
               the highest-risk data.</dd></div>
           </dl>
@@ -162,7 +169,7 @@
               roadmap) and designed a three-layer control model:
               <div class="layers">
                 <div class="layer l3"><b>Curated, governed rules</b><span>Deep, business-owned checks for Tier 1 critical data</span></div>
-                <div class="layer l2"><b>Automated baseline rules</b><span>Standard checks generated for every element in scope</span></div>
+                <div class="layer l2"><b>Automated completeness rules</b><span>Baseline checks for every element in scope</span></div>
                 <div class="layer l1"><b>Observability monitoring</b><span>Daily metrics and drift detection across everything</span></div>
               </div>
             </dd></div>
@@ -174,19 +181,22 @@
 
         <article class="project">
           <div>
-            <span class="tag">SQL Server · Flask</span>
-            <h3>Central DQ results database and coverage apps</h3>
+            <span class="tag">Dashboards · SQL Server</span>
+            <h3>Data Quality Portal and central results database</h3>
             <p class="muted">One view of data health, whichever tool ran the check.</p>
-            <ul class="chips"><li>MS SQL Server</li><li>Flask</li><li>HTML / CSS / JavaScript</li><li>Cloudera AI Workbench</li></ul>
+            <ul class="chips"><li>Streamlit</li><li>Plotly</li><li>Pandas</li><li>Impala</li><li>MS SQL Server</li></ul>
           </div>
           <dl>
-            <div><dt>Problem</dt><dd>Results were scattered across Python checks, vendor reports and watsonx, each in
-              its own format.</dd></div>
+            <div><dt>Problem</dt><dd>Results were scattered across Python checks, Alteryx and watsonx, each in its own
+              format, and data owners had no single place to see them.</dd></div>
             <div><dt>Approach</dt><dd>Architected a central results database on MS SQL Server with a common schema
-              tagged by source system, and built Flask web applications on Cloudera AI Workbench to surface the
-              results, including coverage of critical data elements by the control model.</dd></div>
-            <div><dt>Result</dt><dd>Data owners and stewards get one place to see what is checked, what passed, and
-              where coverage is missing.</dd></div>
+              tagged by source system. Built a multi-page Streamlit portal on top of it: dataset explorer, column
+              profiling, rule results, drill-down to failed records, DQ trends, metadata, observability metrics
+              and a cross-table alert feed. A shared query layer means every page works against the live Impala
+              cluster or falls back automatically to realistic mock data.</dd></div>
+            <div><dt>Result</dt><dd>Data owners and stewards see what is checked, what passed and what is drifting in
+              one place. Admins can switch pages on and off without a redeploy, and a focused
+              observability-only build runs from the same code.</dd></div>
           </dl>
         </article>
 
@@ -204,10 +214,16 @@
             <div><dt>Approach</dt><dd>Designed the portal and all of its content: 3 modules and 17 lessons
               covering DQ principles, how data quality affects their work, their role in the process, the tooling,
               and how the enterprise strategy fits together. Lessons combine written guides, scenario-based
-              quizzes, interactive practice games and progress tracking.</dd></div>
-            <div><dt>Result</dt><dd>A self-paced static site packaged in Docker with nginx, simple to host and run
-              anywhere.</dd></div>
+              quizzes and progress tracking, plus practice games such as <i>Dirty Record Detective</i>,
+              <i>Dimension Sorter</i>, <i>The Cascade Effect</i> and <i>Steward for a Day</i>.</dd></div>
+            <div><dt>Result</dt><dd>A self-paced static site packaged in Docker with nginx. Learner progress,
+              quiz results and feedback feed engagement, mastery and reach dashboards in the Data Quality
+              Portal, so the program can see who is learning and where lessons need work.</dd></div>
           </dl>
+          <figure class="shot">
+            <img src="img/lesson-coverage-map.png" alt="Learning Hub lesson slide titled 'A coverage map, not a competition', a table showing which data quality issues each of the three tiers detects" loading="lazy" width="1920" height="1080">
+            <figcaption>Lesson 1.5 from the Learning Hub: how the three tiers of the coverage model work together.</figcaption>
+          </figure>
         </article>
 
         <article class="project">
@@ -382,7 +398,7 @@
         <div class="skill"><h3>Programming</h3><ul>
           <li>Python: frameworks, statistical checks, pipelines</li>
           <li>SQL: MS SQL Server, Sybase, DB2, Hive, Impala</li>
-          <li>Flask web apps with HTML, CSS, JavaScript</li></ul></div>
+          <li>Streamlit and Flask web apps, Plotly, Pandas</li></ul></div>
         <div class="skill"><h3>Analytics and statistics</h3><ul>
           <li>Data profiling and time series metrics</li>
           <li>z-score anomaly and drift detection</li>
