@@ -292,6 +292,9 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
 @media (max-width: 860px) {
   .project, .calc, .qc-grid, .primer, .cards-3, .cards-2, .cards-final { grid-template-columns: 1fr; }
   .glossary dl { grid-template-columns: 1fr; }
+  /* Wide, short diagrams scroll sideways rather than shrinking to unreadable text. */
+  .shot.wide { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .shot.wide img { min-width: 760px; }
   .glossary dd { margin-bottom: 8px; }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .job { grid-template-columns: 1fr; gap: 4px; }

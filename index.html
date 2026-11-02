@@ -10,7 +10,7 @@
   <meta property="og:url" content="https://travis-mccormack-analytics.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
   <!-- Bump ?v= whenever css or js changes, so browsers don't pair a new page with cached old files. -->
-  <link rel="stylesheet" href="css/styles.css?v=5">
+  <link rel="stylesheet" href="css/styles.css?v=6">
 </head>
 <body>
 
@@ -153,6 +153,9 @@
             <div><dt>Result</dt><dd>Broad, low-effort monitoring across the data lake, so expert effort could go to
               the highest-risk data.</dd></div>
           </dl>
+          <figure class="shot wide">
+            <img src="img/observability-flow.png" alt="Five-step observability process: compute daily column metrics, compare to a 30-day rolling baseline with z-scores, apply guardrails including a 7-day burn-in, flag drift at high, medium and low severity, and focus expert effort on the highest-risk data. Outcome: broad, low-effort monitoring across the data lake." loading="lazy" width="1242" height="189">
+          </figure>
           <div class="fire-link" style="grid-column:1/-1"><b>In fire science:</b> the same technique catches a
             drifting temperature sensor or a stuck humidity probe at a fire weather station before it skews the
             FWI codes. <a href="#qc-demo">See it working →</a></div>
@@ -513,7 +516,7 @@
   </div>
 </footer>
 
-<script src="js/fwi.js?v=5"></script>
-<script src="js/demos.js?v=5"></script>
+<script src="js/fwi.js?v=6"></script>
+<script src="js/demos.js?v=6"></script>
 </body>
 </html>
