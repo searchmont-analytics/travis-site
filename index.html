@@ -10,7 +10,7 @@
   <meta property="og:url" content="https://travis-mccormack-analytics.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
   <!-- Bump ?v= whenever css or js changes, so browsers don't pair a new page with cached old files. -->
-  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="stylesheet" href="css/styles.css?v=7">
 </head>
 <body>
 
@@ -101,11 +101,49 @@
     <div class="wrap">
       <div class="eyebrow">Selected project work</div>
       <h2>Projects</h2>
-      <p class="section-intro">Recent work from my role as Senior Data Quality Analyst at OLG. The code and data
-        belong to OLG, so these are summaries of the design and results. The <a href="#demos">demos below</a> show
-        the same methods applied to fire weather data.</p>
+      <p class="section-intro">A personal GIS project for my local fire department, followed by recent work from my
+        role as Senior Data Quality Analyst at OLG. The OLG code and data belong to OLG, so those are summaries of
+        the design and results. The <a href="#demos">demos below</a> show the same methods applied to fire weather
+        data.</p>
 
       <div class="projects">
+
+        <article class="project featured">
+          <div>
+            <span class="tag">GIS · Fire protection planning · Personal project</span>
+            <h3>Searchmont water source evaluation atlas</h3>
+            <p class="muted">An interactive map for planning rural firefighting water supply in the Searchmont
+              Fire Department response area, north of Sault Ste. Marie.</p>
+            <ul class="chips"><li>Leaflet</li><li>GeoJSON</li><li>Ontario Road Network</li><li>Network routing</li><li>Spatial clustering</li><li>JavaScript</li><li>Python</li></ul>
+            <div class="cta">
+              <a class="btn primary" href="https://searchmont-analytics.github.io/smt_water_sources/" target="_blank" rel="noopener">Open the live map ↗</a>
+              <a class="btn" href="https://github.com/searchmont-analytics/smt_water_sources" target="_blank" rel="noopener">View source</a>
+            </div>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Rural fire response in Searchmont depends on limited water: one hydrant at the
+              ski resort and a set of drafting sites on lakes and rivers. Planning where new water storage would
+              help most means knowing how far each building is from water by road, not as the crow flies.</dd></div>
+            <div><dt>Approach</dt><dd>Combined 20 known water locations and the fire hall with 162 Ontario Road Network
+              segments and 546 Microsoft building footprints on an Esri basemap. Every building is routed along the
+              road network to the hydrant, with explicit speed assumptions (40 km/h paved, 25 km/h unpaved, capped at
+              posted limits). Fixed-radius clustering finds groups of structures that could share a cistern, and a
+              time-budget view shows which roads fall within a given drive time. Results export as CSV, JSON and
+              GeoJSON.</dd></div>
+            <div><dt>Data quality</dt><dd>Every assumption and limit is stated on screen: footprints are not
+              confirmed homes, unreviewed roads are flagged, and point-to-road gaps are reported separately rather
+              than hidden in the totals. Automated tests check the routing and clustering, and a script reproduces the
+              baseline analysis.</dd></div>
+            <div><dt>Result</dt><dd>509 of 546 structures routed to the hydrant (37 sit more than 250 m from a mapped
+              road). At a 500 m radius with at least five structures, 28 groups cover 480 structures: a starting point
+              for discussions on long-term water source development.</dd></div>
+          </dl>
+          <figure class="shot">
+            <a href="https://searchmont-analytics.github.io/smt_water_sources/" target="_blank" rel="noopener"><img src="img/searchmont-atlas.jpg" alt="Map of the Searchmont response area showing water sources, Ontario Road Network segments, the response area outline and numbered building clusters, with the hydrant and cluster evaluation panel open" loading="lazy" width="800" height="478"></a>
+            <figcaption>The Evaluate tab after routing all buildings and grouping them into clusters. Click to open the
+              live map.</figcaption>
+          </figure>
+        </article>
 
         <article class="project">
           <div>
@@ -483,6 +521,11 @@
           <li>Data profiling and time series metrics</li>
           <li>z-score anomaly and drift detection</li>
           <li>Root-cause analysis, fitness-for-purpose assessment</li></ul></div>
+        <div class="skill"><h3>GIS and mapping</h3><ul>
+          <li>Leaflet web maps, GeoJSON, Esri basemaps</li>
+          <li>Ontario Road Network, building footprints</li>
+          <li>Network routing, proximity and clustering</li>
+          <li>ArcGIS geocoding API for address validation</li></ul></div>
         <div class="skill"><h3>Data platforms and tools</h3><ul>
           <li>Cloudera Data Platform, Hadoop, Parquet</li>
           <li>IBM watsonx.data intelligence, InfoSphere, Informatica DQ</li>
@@ -516,7 +559,7 @@
   </div>
 </footer>
 
-<script src="js/fwi.js?v=6"></script>
-<script src="js/demos.js?v=6"></script>
+<script src="js/fwi.js?v=7"></script>
+<script src="js/demos.js?v=7"></script>
 </body>
 </html>

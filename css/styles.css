@@ -137,6 +137,9 @@ section.alt { background: var(--surface-2); }
   display: grid; grid-template-columns: 1fr 1.5fr; gap: 28px;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px;
 }
+.project.featured { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.project .cta { margin-top: 18px; }
+.shot a { display: block; }
 .project .tag { display: inline-block; font-size: .78rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
 .project h3 { font-size: 1.3rem; }
 .project dl { margin: 0; display: grid; gap: 12px; }
