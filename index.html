@@ -197,8 +197,12 @@
             <div><dt>Approach</dt><dd>Architected a central results database on MS SQL Server with a common schema
               tagged by source system. Built a multi-page Streamlit portal on top of it: dataset explorer, column
               profiling, rule results, drill-down to failed records, DQ trends, metadata, observability metrics
-              and a cross-table alert feed. A shared query layer means every page works against the live Impala
-              cluster or falls back automatically to realistic mock data.</dd></div>
+              and a cross-table alert feed.</dd></div>
+            <div><dt>Why Streamlit</dt><dd>The portal is written entirely in Python, the same language as the DQ
+              framework, so the data quality team could build and maintain it without a separate web development
+              project. Pandas tables and Plotly charts drop straight onto a page, and built-in filters and
+              selectors make drill-downs simple to add. New pages took hours rather than weeks, so the portal could
+              grow alongside the program.</dd></div>
             <div><dt>Result</dt><dd>Data owners and stewards see what is checked, what passed and what is drifting in
               one place. Admins can switch pages on and off without a redeploy, and a focused
               observability-only build runs from the same code.</dd></div>
