@@ -147,16 +147,62 @@ input, select {
   border: 1px solid var(--border); background: var(--bg); color: var(--text); width: 100%;
 }
 input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-#fwi-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-content: start; }
-.code { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
-.code span { display: block; font-size: .75rem; font-weight: 700; color: var(--muted); letter-spacing: .06em; }
-.code b { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
-.code-main { border-color: var(--accent); }
-.code-main b { color: var(--accent); }
+/* FWI tutorial */
+h4 { margin: 0; font-size: 1.05rem; }
+.primer { display: grid; grid-template-columns: 1.6fr 1fr; gap: 28px; padding: 20px; border-radius: var(--radius); background: var(--surface-2); margin-bottom: 20px; }
+.primer h4 { margin-bottom: .5em; }
+.primer p, .primer li { font-size: .95rem; }
+.primer ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.flow { display: grid; justify-items: center; align-content: center; gap: 4px; }
+.flow-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.node { display: grid; text-align: center; font-weight: 800; font-size: .9rem; padding: 6px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); min-width: 72px; }
+.node small { font-weight: 500; font-size: .72rem; color: var(--muted); }
+.node.wx { border-color: var(--accent-2); color: var(--accent-2); }
+.node.final { border-color: var(--accent); color: var(--accent); }
+.flow-arrow { color: var(--muted); line-height: 1; }
+.scenarios { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.scn-label { font-weight: 700; font-size: .9rem; margin-right: 4px; }
+.btn.scn { padding: 7px 14px; font-size: .88rem; }
+.btn.scn.active { background: var(--brand); border-color: var(--brand); color: var(--bg); }
+.scn-note { min-height: 0; margin: 12px 0 0; padding: 0; font-size: .95rem; }
+.scn-note:not(:empty) { padding: 12px 14px; border-left: 3px solid var(--brand); background: var(--surface-2); border-radius: 0 8px 8px 0; }
+.step { margin-top: 24px; }
+.step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.step-n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: var(--bg); font-weight: 800; font-size: .9rem; flex: none; }
+.step-intro { color: var(--muted); font-size: .93rem; margin: 0 0 12px; max-width: 75ch; }
+.step .fields { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+label small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.35; }
+.yesterday { margin-top: 14px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+.yesterday[open] summary { margin-bottom: 8px; }
+.yesterday summary span { font-weight: 500; font-size: .85rem; }
+.cards { display: grid; gap: 12px; }
+.cards-3 { grid-template-columns: repeat(3, 1fr); }
+.cards-2 { grid-template-columns: repeat(2, 1fr); }
+.cards-final { grid-template-columns: 2fr 1fr; align-items: stretch; }
+.code-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.code-card.final { border-color: var(--accent); }
+.cc-top { display: flex; justify-content: space-between; align-items: baseline; }
+.acr { font-size: .78rem; font-weight: 800; letter-spacing: .08em; color: var(--muted); }
+.cc-top b { font-size: 1.6rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.code-card.final .cc-top b { color: var(--accent); }
+.cc-name { font-weight: 700; font-size: .92rem; }
+.meter { height: 6px; border-radius: 3px; background: var(--grid); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 3px; transition: width .25s; }
+.cc-level { font-size: .85rem; font-weight: 700; padding-left: 8px; border-left: 3px solid var(--lv); }
+.cc-what, .cc-extra { margin: 0; font-size: .84rem; color: var(--muted); }
+.cc-extra { border-top: 1px dashed var(--border); padding-top: 6px; }
+.up { color: var(--accent); font-weight: 700; }
+.down { color: var(--accent-2); font-weight: 700; }
 .class-pill {
-  grid-column: 1 / -1; text-align: center; font-weight: 800; padding: 8px; border-radius: 8px;
+  display: grid; place-content: center; text-align: center; font-weight: 800; font-size: 1.4rem; padding: 12px; border-radius: 10px;
   background: color-mix(in srgb, var(--pill) 18%, transparent); border: 1px solid var(--pill);
 }
+.class-pill small { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.next-day { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 20px; font-size: .9rem; }
+.next-day .muted { flex: 1; min-width: 220px; }
+.glossary dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 12px 0; }
+.glossary dt { font-weight: 700; }
+.glossary dd { margin: 0; color: var(--muted); }
 .controls { display: flex; gap: 16px; align-items: end; flex-wrap: wrap; }
 .controls label { min-width: 200px; }
 input[type=range] { padding: 0; accent-color: var(--accent); }
@@ -204,7 +250,9 @@ footer { padding: 28px 0; border-top: 1px solid var(--border); font-size: .85rem
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 @media (max-width: 860px) {
-  .project, .calc, .qc-grid { grid-template-columns: 1fr; }
+  .project, .calc, .qc-grid, .primer, .cards-3, .cards-2, .cards-final { grid-template-columns: 1fr; }
+  .glossary dl { grid-template-columns: 1fr; }
+  .glossary dd { margin-bottom: 8px; }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .job { grid-template-columns: 1fr; gap: 4px; }
   .nav { display: none; }
@@ -212,5 +260,4 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
 @media (max-width: 480px) {
   .wrap { padding: 0 16px; }
   .project, .demo { padding: 18px; }
-  #fwi-out { grid-template-columns: repeat(2, 1fr); }
 }

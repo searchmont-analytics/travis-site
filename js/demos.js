@@ -108,21 +108,164 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
 
 // ---------- Demo 1: single-day FWI calculator ----------
 
+// Plain-language guide to each component. Level breaks are a rough general
+// guide for beginners, not an agency standard.
+const LEVEL_COLORS = ['--c-low', '--c-mod', '--c-high', '--c-vhigh', '--c-ext'];
+const GUIDE = {
+  ffmc: {
+    name: 'Fine Fuel Moisture Code', max: 101, min: 50,
+    what: 'Surface litter: needles, leaves, grass. Reacts within about a day.',
+    levels: [[74, 'Damp: hard to ignite'], [84, 'Drying: will ignite with effort'], [88, 'Dry: ignites easily'],
+      [91, 'Very dry: ignites very easily'], [Infinity, 'Extremely dry: almost any spark will catch']],
+  },
+  dmc: {
+    name: 'Duff Moisture Code', max: 100,
+    what: 'Decaying layer a few centimetres down. Reacts over about two weeks.',
+    levels: [[15, 'Moist: fires stay on the surface'], [30, 'Drying'], [50, 'Dry: fires burn into the duff'],
+      [80, 'Very dry: lightning fires can smoulder for days'], [Infinity, 'Extremely dry']],
+  },
+  dc: {
+    name: 'Drought Code', max: 800,
+    what: 'Deep, compact organic soil. Reacts over about seven weeks: seasonal drought.',
+    levels: [[150, 'Deep layers moist'], [300, 'Drying at depth'], [425, 'Dry: fires burn deep, hard to put out'],
+      [550, 'Very dry: long, difficult mop-up'], [Infinity, 'Severe drought']],
+  },
+  isi: {
+    name: 'Initial Spread Index', max: 30,
+    what: 'How fast a fire would spread.',
+    levels: [[3, 'Slow spread'], [7, 'Moderate spread'], [13, 'Fast spread'], [20, 'Very fast spread'], [Infinity, 'Extreme spread']],
+  },
+  bui: {
+    name: 'Buildup Index', max: 120,
+    what: 'How much fuel is available to burn.',
+    levels: [[20, 'Little fuel available'], [40, 'Moderate fuel available'], [60, 'Lots of fuel available'],
+      [90, 'Heavy fuel available'], [Infinity, 'Extreme fuel available']],
+  },
+  fwi: {
+    name: 'Fire Weather Index', max: 50,
+    what: 'Overall intensity of a spreading fire.',
+    levels: [[5, 'Low: fires unlikely to grow much'], [10, 'Moderate: fires can usually be held by ground crews'],
+      [20, 'High: fires grow and are harder to control'], [30, 'Very high: fast, intense fires'],
+      [Infinity, 'Extreme: fires very difficult to control']],
+  },
+};
+
+const SCENARIOS = {
+  spring: {
+    obs: { temp: 17, rh: 42, wind: 25, rain: 0, month: 4 }, prev: { ffmc: 85, dmc: 6, dc: 15 },
+    note: 'A mild, breezy April day, starting from the standard spring start-up values. The surface litter dries quickly, so FFMC climbs, but the deeper layers are still wet from snowmelt, so DMC and DC stay low. Grass fires can still spread, which is why spring is a busy season in Ontario.',
+  },
+  hot: {
+    obs: { temp: 30, rh: 20, wind: 30, rain: 0, month: 7 }, prev: { ffmc: 89, dmc: 45, dc: 350 },
+    note: 'Mid-summer after weeks without much rain. Every layer is dry, hot air and low humidity dry the surface further, and strong wind drives spread. Every number points the same way: this is a dangerous day.',
+  },
+  rain: {
+    obs: { temp: 18, rh: 70, wind: 10, rain: 15, month: 7 }, prev: { ffmc: 89, dmc: 45, dc: 350 },
+    note: 'The same dry July forest, after 15 mm of rain. The surface litter soaks up the rain, so FFMC drops sharply, and DMC falls by about half. DC drops far less: one rainfall does not end a deep drought. Fires are unlikely today, but the forest will dry back quickly.',
+  },
+  drought: {
+    obs: { temp: 24, rh: 35, wind: 5, rain: 0, month: 8 }, prev: { ffmc: 88, dmc: 70, dc: 500 },
+    note: 'Late August in a drought, but almost no wind. ISI stays modest because spread needs wind, yet BUI is very high because the deep layers are bone dry. A fire here might creep slowly, but it would burn deep and be very hard to fully put out.',
+  },
+};
+
+function level(key, v) {
+  const i = GUIDE[key].levels.findIndex(([max]) => v < max);
+  return { text: GUIDE[key].levels[i][1], color: `var(${LEVEL_COLORS[i]})` };
+}
+
+function codeCard(key, value, extra) {
+  const g = GUIDE[key];
+  const lv = level(key, value);
+  const pct = clamp(((value - (g.min || 0)) / (g.max - (g.min || 0))) * 100, 2, 100);
+  return `<div class="code-card${key === 'fwi' ? ' final' : ''}">
+    <div class="cc-top"><span class="acr">${key.toUpperCase()}</span><b>${fmt(value)}</b></div>
+    <div class="cc-name">${g.name}</div>
+    <div class="meter"><i style="width:${pct}%;background:${lv.color}"></i></div>
+    <div class="cc-level" style="--lv:${lv.color}">${lv.text}</div>
+    <p class="cc-what">${g.what}</p>
+    ${extra ? `<p class="cc-extra">${extra}</p>` : ''}
+  </div>`;
+}
+
+function changeText(today, yesterday) {
+  const d = today - yesterday;
+  if (Math.abs(d) < 0.05) return `Unchanged from yesterday (${fmt(yesterday)}).`;
+  return d > 0
+    ? `<span class="up">▲ ${fmt(d)}</span> from yesterday's ${fmt(yesterday)}: drying.`
+    : `<span class="down">▼ ${fmt(-d)}</span> from yesterday's ${fmt(yesterday)}: wetter.`;
+}
+
 function initCalculator() {
   const form = $('#fwi-form');
   const out = $('#fwi-out');
+  const note = $('#scn-note');
+  let today = null;
+
+  const set = (name, value) => { form.elements[name].value = Math.round(value * 10) / 10; };
+
   const run = () => {
     const v = (id) => parseFloat(form.elements[id].value);
     const prev = { ffmc: v('pffmc'), dmc: v('pdmc'), dc: v('pdc') };
     const obs = { temp: v('temp'), rh: clamp(v('rh'), 0, 100), wind: Math.max(v('wind'), 0), rain: Math.max(v('rain'), 0), month: v('month') };
     if (Object.values({ ...prev, ...obs }).some(Number.isNaN)) return;
     const r = FWI.day(prev, obs);
+    today = r;
+    $('#prev-summary').textContent = `(FFMC ${fmt(prev.ffmc)} · DMC ${fmt(prev.dmc)} · DC ${fmt(prev.dc)})`;
     const cls = FWI.dangerClass(r.fwi);
-    out.innerHTML = ['ffmc', 'dmc', 'dc', 'isi', 'bui', 'fwi']
-      .map((k) => `<div class="code${k === 'fwi' ? ' code-main' : ''}"><span>${k.toUpperCase()}</span><b>${fmt(r[k])}</b></div>`)
-      .join('') + `<div class="class-pill" style="--pill:${cls.color}">${cls.name}</div>`;
+    out.innerHTML = `
+      <section class="step">
+        <div class="step-head"><span class="step-n">2</span><h4>How dry is the forest floor?</h4></div>
+        <p class="step-intro">Three moisture codes, one for each layer. Despite the name, <b>higher means drier</b>.
+          The deeper the layer, the slower it changes.</p>
+        <div class="cards cards-3">
+          ${codeCard('ffmc', r.ffmc, changeText(r.ffmc, prev.ffmc))}
+          ${codeCard('dmc', r.dmc, changeText(r.dmc, prev.dmc))}
+          ${codeCard('dc', r.dc, changeText(r.dc, prev.dc))}
+        </div>
+      </section>
+      <section class="step">
+        <div class="step-head"><span class="step-n">3</span><h4>How would a fire behave?</h4></div>
+        <p class="step-intro">The codes are combined into two behaviour indices: one for speed, one for fuel.</p>
+        <div class="cards cards-2">
+          ${codeCard('isi', r.isi, `Made from surface dryness (FFMC ${fmt(r.ffmc)}) and wind (${fmt(obs.wind, 0)} km/h).`)}
+          ${codeCard('bui', r.bui, `Made from the middle and deep layers (DMC ${fmt(r.dmc)}, DC ${fmt(r.dc, 0)}).`)}
+        </div>
+      </section>
+      <section class="step">
+        <div class="step-head"><span class="step-n">4</span><h4>Overall fire danger</h4></div>
+        <p class="step-intro">Speed and fuel together give the Fire Weather Index, the number behind public
+          fire danger ratings.</p>
+        <div class="cards cards-final">
+          ${codeCard('fwi', r.fwi, `Made from spread (ISI ${fmt(r.isi)}) and fuel (BUI ${fmt(r.bui)}).`)}
+          <div class="class-pill" style="--pill:${cls.color}"><small>Danger class</small>${cls.name}</div>
+        </div>
+      </section>`;
   };
-  form.addEventListener('input', run);
+
+  form.addEventListener('input', () => {
+    note.textContent = '';
+    document.querySelectorAll('.scn').forEach((b) => b.classList.remove('active'));
+    run();
+  });
+
+  document.querySelectorAll('.scn').forEach((btn) => btn.addEventListener('click', () => {
+    const s = SCENARIOS[btn.dataset.scn];
+    Object.entries(s.obs).forEach(([k, val]) => set(k, val));
+    set('pffmc', s.prev.ffmc); set('pdmc', s.prev.dmc); set('pdc', s.prev.dc);
+    document.querySelectorAll('.scn').forEach((b) => b.classList.toggle('active', b === btn));
+    note.textContent = s.note;
+    run();
+  }));
+
+  $('#fwi-next').addEventListener('click', () => {
+    if (!today) return;
+    set('pffmc', today.ffmc); set('pdmc', today.dmc); set('pdc', today.dc);
+    document.querySelectorAll('.scn').forEach((b) => b.classList.remove('active'));
+    note.textContent = 'Moved to the next day with the same weather. Yesterday\'s codes are now the ones you just calculated.';
+    run();
+  });
+
   run();
 }
 
