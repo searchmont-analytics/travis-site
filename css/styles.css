@@ -87,9 +87,37 @@ p { margin: 0 0 1em; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 44px; }
-.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.stat b { display: block; font-size: 1.7rem; color: var(--brand); }
-.stat span { font-size: .88rem; color: var(--muted); }
+.stat {
+  position: relative; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  animation: stat-in .7s cubic-bezier(.2, .7, .2, 1) backwards;
+  animation-delay: var(--d, 0s);
+}
+.stat:nth-child(2) { --d: .1s; }
+.stat:nth-child(3) { --d: .2s; }
+.stat:nth-child(4) { --d: .3s; }
+/* Accent rule that draws across the top of each card after it lands. */
+.stat::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 3px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  transform-origin: left;
+  animation: stat-rule .9s cubic-bezier(.2, .7, .2, 1) backwards;
+  animation-delay: calc(var(--d, 0s) + .35s);
+}
+.stat:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
+  box-shadow: 0 14px 28px -16px rgb(0 0 0 / .35);
+}
+.stat b { display: block; font-size: 1.7rem; color: var(--brand); font-variant-numeric: tabular-nums; }
+.stat > span { font-size: .88rem; color: var(--muted); }
+@keyframes stat-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes stat-rule { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .stat, .stat::before { animation: none; }
+  .stat:hover { transform: none; }
+}
 
 section { padding: 64px 0; }
 section.alt { background: var(--surface-2); }

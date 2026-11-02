@@ -483,6 +483,27 @@ function initQuality() {
   regenerate(41);
 }
 
+// Hero stats count up from zero as each card slides in.
+function initStats() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const target = parseInt(el.dataset.count, 10);
+    const delay = (parseFloat(getComputedStyle(el.closest('.stat')).getPropertyValue('--d')) || 0) * 1000 + 150;
+    const duration = 1200;
+    el.textContent = '0';
+    setTimeout(() => {
+      const start = performance.now();
+      const tick = (now) => {
+        const t = Math.min((now - start) / duration, 1);
+        el.textContent = Math.round(target * (1 - (1 - t) ** 3));
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, delay);
+  });
+}
+
+initStats();
 initCalculator();
 initSeason();
 initQuality();
