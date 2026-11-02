@@ -30,8 +30,11 @@ function setupCanvas(canvas) {
   return { ctx, w, h };
 }
 
+const easeOutBack = (t) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2;
+
 // series: [{ values: [number|null], color, width }]; marks: [{ i, v }]
-function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLabels = [], yLabel = '', hover = null }) {
+// progress (0–1) draws only the left part of the chart, with a scan line at the edge.
+function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLabels = [], yLabel = '', hover = null, progress = 1 }) {
   const { ctx, w, h } = setupCanvas(canvas);
   const pad = { l: 40, r: 10, t: 12, b: 26 };
   const pw = w - pad.l - pad.r;
@@ -71,6 +74,12 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
     ctx.textBaseline = 'middle'; ctx.fillText(yLabel, 0, 0); ctx.restore();
   }
 
+  const scanning = progress < 1;
+  const edge = pad.l + pw * progress;
+  if (scanning) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, edge, h); ctx.clip();
+  }
   for (const s of series) {
     ctx.strokeStyle = s.color;
     ctx.lineWidth = s.width || 2;
@@ -85,10 +94,29 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
     });
     ctx.stroke();
   }
+  if (scanning) {
+    ctx.restore();
+    if (progress > 0) {
+      const glow = ctx.createLinearGradient(edge - 48, 0, edge, 0);
+      glow.addColorStop(0, 'transparent');
+      glow.addColorStop(1, css('--brand'));
+      ctx.globalAlpha = 0.14;
+      ctx.fillStyle = glow;
+      ctx.fillRect(edge - 48, pad.t, 48, ph);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = css('--brand');
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(edge, pad.t); ctx.lineTo(edge, pad.t + ph); ctx.stroke();
+    }
+  }
 
   for (const m of marks) {
+    // Each flag pops in just after the scan line passes it.
+    const f = m.i / (n - 1);
+    if (f > progress) continue;
+    const r = scanning ? 4.5 * easeOutBack(Math.min((progress - f) / 0.03, 1)) : 4.5;
     ctx.beginPath();
-    ctx.arc(x(m.i), y(clamp(m.v, yMin, yMax)), 4.5, 0, 2 * Math.PI);
+    ctx.arc(x(m.i), y(clamp(m.v, yMin, yMax)), Math.max(r, 0.1), 0, 2 * Math.PI);
     ctx.fillStyle = css('--surface');
     ctx.fill();
     ctx.strokeStyle = css('--flag');
@@ -443,8 +471,12 @@ function initQuality() {
   const tChart = $('#qc-temp');
   const rChart = $('#qc-rh');
   const score = $('#qc-score');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let feed;
   let checked;
+  let progress = 0;
+  let frame = null;
+  let timers = [];
 
   const render = () => {
     const xLabels = [];
@@ -455,32 +487,104 @@ function initQuality() {
     checked.driftDays.forEach((d) => tMarks.push({ i: d * 24 + 12, v: checked.dailyMean[d] }));
     drawChart(tChart, {
       series: [{ values: feed.temp, color: css('--accent'), width: 1.5 }],
-      yMin: 0, yMax: 50, xLabels, yLabel: '°C', marks: tMarks.filter((m) => m.v != null),
+      yMin: 0, yMax: 50, xLabels, yLabel: '°C', marks: tMarks.filter((m) => m.v != null), progress,
     });
     drawChart(rChart, {
       series: [{ values: feed.rh, color: css('--accent-2'), width: 1.5 }],
-      yMin: 0, yMax: 110, xLabels, yLabel: '% RH', marks: mark('rh', feed.rh),
+      yMin: 0, yMax: 110, xLabels, yLabel: '% RH', marks: mark('rh', feed.rh), progress,
     });
   };
 
-  const regenerate = (seed) => {
-    feed = makeStationFeed(seed);
-    checked = runChecks(feed);
+  const finalScore = () => {
     const n = feed.hours;
-    tbody.innerHTML = checked.results.map((r) => `<tr>
-      <td>${r.rule}</td><td>${r.desc}</td>
-      <td class="num">${r.failed} ${r.unit || 'hrs'}</td>
-      <td><span class="status ${r.failed ? 'fail' : 'pass'}">${r.failed ? 'Flagged' : 'Pass'}</span></td></tr>`).join('');
     const bad = new Set([...checked.flags.temp, ...checked.flags.rh]).size;
-    score.innerHTML = `<b>${fmt(100 * (1 - bad / n))}%</b> of ${n} hourly records passed the record-level checks`
+    return `<b>${fmt(100 * (1 - bad / n))}%</b> of ${n} hourly records passed the record-level checks`
       + (checked.driftDays.length ? ` · drift detected on day ${checked.driftDays.map((d) => d + 1).join(', ')}` : '');
-    render();
   };
 
-  $('#qc-new').addEventListener('click', () => regenerate(Math.floor(Math.random() * 1e9)));
+  // Results land one row at a time, each count ticking up to its final value.
+  const resolveRows = (instant) => {
+    const rows = [...tbody.rows];
+    rows.forEach((tr, idx) => {
+      const r = checked.results[idx];
+      const show = () => {
+        const cnt = tr.querySelector('.cnt');
+        const status = tr.querySelector('.status');
+        status.className = `status ${r.failed ? 'fail' : 'pass'}${instant ? '' : ' reveal'}`;
+        status.textContent = r.failed ? 'Flagged' : 'Pass';
+        tr.classList.add('done');
+        if (instant || r.failed === 0) { cnt.textContent = r.failed; return; }
+        const start = performance.now();
+        const tick = (now) => {
+          const t = Math.min((now - start) / 450, 1);
+          cnt.textContent = Math.round(r.failed * (1 - (1 - t) ** 3));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+      if (instant) show(); else timers.push(setTimeout(show, idx * 220));
+    });
+    if (instant) score.innerHTML = finalScore();
+    else timers.push(setTimeout(() => { score.innerHTML = finalScore(); score.classList.add('reveal'); }, rows.length * 220 + 200));
+  };
+
+  // Scan the feed left to right, flagging faults as the line passes them.
+  const play = () => {
+    cancelAnimationFrame(frame);
+    timers.forEach(clearTimeout);
+    timers = [];
+    score.classList.remove('reveal');
+    tbody.querySelectorAll('.status.pending').forEach((s) => { s.textContent = 'Checking…'; });
+    const n = feed.hours;
+    const start = performance.now();
+    const step = (now) => {
+      progress = Math.min((now - start) / 2600, 1);
+      score.textContent = `Scanning hour ${Math.round(progress * n)} of ${n}…`;
+      render();
+      if (progress < 1) frame = requestAnimationFrame(step);
+      else resolveRows(false);
+    };
+    frame = requestAnimationFrame(step);
+  };
+
+  const load = (seed, label) => {
+    feed = makeStationFeed(seed);
+    checked = runChecks(feed);
+    tbody.innerHTML = checked.results.map((r) => `<tr>
+      <td>${r.rule}</td><td>${r.desc}</td>
+      <td class="num"><span class="cnt">–</span> ${r.unit || 'hrs'}</td>
+      <td><span class="status pending">${label}</span></td></tr>`).join('');
+  };
+
+  const regenerate = (seed, animate) => {
+    load(seed, 'Checking…');
+    if (reduced || !animate) {
+      progress = 1;
+      render();
+      resolveRows(true);
+    } else {
+      play();
+    }
+  };
+
+  $('#qc-new').addEventListener('click', () => regenerate(Math.floor(Math.random() * 1e9), true));
   window.addEventListener('resize', render);
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-  regenerate(41);
+
+  // First scan runs when the demo scrolls into view.
+  if (reduced || !('IntersectionObserver' in window)) {
+    regenerate(41, false);
+  } else {
+    load(41, 'Waiting');
+    progress = 0;
+    render();
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      play();
+    }, { threshold: 0.35 });
+    io.observe($('#qc-demo'));
+  }
 }
 
 // Hero stats count up from zero as each card slides in.

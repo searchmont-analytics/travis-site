@@ -253,7 +253,19 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .status { font-size: .78rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 .status.pass { color: var(--pass); background: color-mix(in srgb, var(--pass) 14%, transparent); }
 .status.fail { color: var(--flag); background: color-mix(in srgb, var(--flag) 14%, transparent); }
-#qc-score { margin: 12px 0 0; font-size: .95rem; }
+.status.pending { color: var(--muted); background: var(--surface-2); font-weight: 600; }
+.status.reveal { display: inline-block; animation: status-pop .4s cubic-bezier(.2, .9, .3, 1.4); }
+#qc-table tbody tr { transition: background-color .4s ease; }
+#qc-table tbody tr.done { animation: row-flash .9s ease; }
+#qc-table .cnt { font-variant-numeric: tabular-nums; }
+#qc-score { margin: 12px 0 0; font-size: .95rem; min-height: 1.6em; font-variant-numeric: tabular-nums; }
+#qc-score.reveal { animation: fade-up .5s ease; }
+@keyframes status-pop { from { transform: scale(.6); opacity: 0; } }
+@keyframes row-flash { from { background: color-mix(in srgb, var(--brand) 10%, transparent); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .status.reveal, #qc-table tbody tr.done, #qc-score.reveal { animation: none; }
+}
 .legend-flag { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--muted); }
 .legend-flag i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--flag); }
 details { margin-top: 16px; font-size: .92rem; }
