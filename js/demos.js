@@ -32,9 +32,28 @@ function setupCanvas(canvas) {
 
 const easeOutBack = (t) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2;
 
-// series: [{ values: [number|null], color, width }]; marks: [{ i, v }]
-// progress (0–1) draws only the left part of the chart, with a scan line at the edge.
-function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLabels = [], yLabel = '', hover = null, progress = 1 }) {
+// '#rrggbb' -> 'rgba(r,g,b,a)' for gradients and washes.
+function hexA(hex, a) {
+  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex.trim());
+  if (!m) return hex;
+  return `rgba(${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)},${a})`;
+}
+
+// Surface-ringed dot, used for flags, the peak and the hover point.
+function ringDot(ctx, cx, cy, r, fill, ring) {
+  ctx.beginPath(); ctx.arc(cx, cy, r + 2, 0, 2 * Math.PI); ctx.fillStyle = css('--surface'); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  if (ring) { ctx.fillStyle = css('--surface'); ctx.fill(); ctx.strokeStyle = fill; ctx.lineWidth = 2; ctx.stroke(); } else { ctx.fillStyle = fill; ctx.fill(); }
+}
+
+// series: [{ values: [number|null], color, width, area }]; marks: [{ i, v }]
+// bands: [{ from, to, color, label }] value ranges; spans: [{ from, to }] index ranges to highlight.
+// annotations: [{ i, v, label }] labelled points. progress (0–1) draws only the left part of
+// the chart; scanLine adds a moving line at that edge.
+function drawChart(canvas, {
+  series, yMax, yMin = 0, bands = [], spans = [], marks = [], annotations = [], xLabels = [], yLabel = '',
+  hover = null, progress = 1, scanLine = true,
+}) {
   const { ctx, w, h } = setupCanvas(canvas);
   const pad = { l: 40, r: 10, t: 12, b: 26 };
   const pw = w - pad.l - pad.r;
@@ -42,33 +61,54 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
   const n = series[0].values.length;
   const x = (i) => pad.l + (i / (n - 1)) * pw;
   const y = (v) => pad.t + ph - ((v - yMin) / (yMax - yMin)) * ph;
+  const font = (size, weight = 400) => `${weight} ${size}px system-ui, -apple-system, "Segoe UI", sans-serif`;
 
   ctx.clearRect(0, 0, w, h);
-  ctx.font = '11px system-ui, sans-serif';
 
   for (const b of bands) {
     const top = y(Math.min(b.to, yMax));
     const bottom = y(Math.max(b.from, yMin));
     if (bottom <= pad.t) continue;
-    ctx.fillStyle = b.color;
-    ctx.globalAlpha = 0.13;
+    ctx.fillStyle = hexA(b.color, 0.1);
     ctx.fillRect(pad.l, top, pw, bottom - top);
-    ctx.globalAlpha = 1;
+    if (b.label && bottom - top >= 16) {
+      ctx.font = font(10, 600);
+      ctx.fillStyle = css('--muted');
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'top';
+      ctx.strokeStyle = css('--surface');
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(b.label.toUpperCase(), pad.l + pw - 6, top + 4);
+      ctx.fillText(b.label.toUpperCase(), pad.l + pw - 6, top + 4);
+    }
+  }
+
+  // Fault spans: a soft wash behind the data with a marker strip along the top.
+  for (const s of spans) {
+    const x0 = x(s.from) - 2;
+    const x1 = x(s.to) + 2;
+    ctx.fillStyle = hexA(css('--flag'), 0.09);
+    ctx.fillRect(x0, pad.t, x1 - x0, ph);
+    ctx.fillStyle = hexA(css('--flag'), 0.55);
+    ctx.fillRect(x0, pad.t, x1 - x0, 3);
   }
 
   ctx.strokeStyle = css('--grid');
   ctx.fillStyle = css('--muted');
+  ctx.font = font(11);
   ctx.lineWidth = 1;
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   for (let k = 0; k <= 4; k++) {
     const v = yMin + ((yMax - yMin) * k) / 4;
-    ctx.beginPath(); ctx.moveTo(pad.l, y(v)); ctx.lineTo(w - pad.r, y(v)); ctx.stroke();
-    ctx.fillText(Math.round(v), pad.l - 6, y(v));
+    const py = Math.round(y(v)) + 0.5;
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(w - pad.r, py); ctx.stroke();
+    ctx.fillText(Math.round(v), pad.l - 8, py);
   }
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  for (const { i, label } of xLabels) ctx.fillText(label, x(i), h - pad.b + 7);
+  for (const { i, label } of xLabels) ctx.fillText(label, x(i), h - pad.b + 8);
   if (yLabel) {
     ctx.save(); ctx.translate(10, pad.t + ph / 2); ctx.rotate(-Math.PI / 2);
     ctx.textBaseline = 'middle'; ctx.fillText(yLabel, 0, 0); ctx.restore();
@@ -81,22 +121,50 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
     ctx.beginPath(); ctx.rect(0, 0, edge, h); ctx.clip();
   }
   for (const s of series) {
+    const path = new Path2D();
+    const runs = [];
+    let run = null;
+    s.values.forEach((v, i) => {
+      if (v == null) { run = null; return; }
+      const px = x(i);
+      const py = y(clamp(v, yMin, yMax));
+      if (run) { path.lineTo(px, py); run.end = px; } else { path.moveTo(px, py); run = { start: px, end: px }; runs.push(run); }
+    });
+    if (s.area) {
+      // Gradient wash under the line, closed down to the baseline for each unbroken run.
+      const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + ph);
+      grad.addColorStop(0, hexA(s.color, 0.28));
+      grad.addColorStop(1, hexA(s.color, 0.02));
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, pw, ph);
+      ctx.clip();
+      ctx.fillStyle = grad;
+      let k = 0;
+      let open = false;
+      const area = new Path2D();
+      s.values.forEach((v, i) => {
+        if (v == null) {
+          if (open) { area.lineTo(runs[k].end, y(yMin)); area.closePath(); k++; open = false; }
+          return;
+        }
+        const px = x(i);
+        const py = y(clamp(v, yMin, yMax));
+        if (!open) { area.moveTo(px, y(yMin)); area.lineTo(px, py); open = true; } else area.lineTo(px, py);
+      });
+      if (open) { area.lineTo(runs[k].end, y(yMin)); area.closePath(); }
+      ctx.fill(area);
+      ctx.restore();
+    }
     ctx.strokeStyle = s.color;
     ctx.lineWidth = s.width || 2;
     ctx.lineJoin = 'round';
-    ctx.beginPath();
-    let pen = false;
-    s.values.forEach((v, i) => {
-      if (v == null) { pen = false; return; }
-      const py = y(clamp(v, yMin, yMax));
-      if (pen) ctx.lineTo(x(i), py); else ctx.moveTo(x(i), py);
-      pen = true;
-    });
-    ctx.stroke();
+    ctx.lineCap = 'round';
+    ctx.stroke(path);
   }
   if (scanning) {
     ctx.restore();
-    if (progress > 0) {
+    if (progress > 0 && scanLine) {
       const glow = ctx.createLinearGradient(edge - 48, 0, edge, 0);
       glow.addColorStop(0, 'transparent');
       glow.addColorStop(1, css('--brand'));
@@ -115,23 +183,52 @@ function drawChart(canvas, { series, yMax, yMin = 0, bands = [], marks = [], xLa
     const f = m.i / (n - 1);
     if (f > progress) continue;
     const r = scanning ? 4.5 * easeOutBack(Math.min((progress - f) / 0.03, 1)) : 4.5;
-    ctx.beginPath();
-    ctx.arc(x(m.i), y(clamp(m.v, yMin, yMax)), Math.max(r, 0.1), 0, 2 * Math.PI);
+    ringDot(ctx, x(m.i), y(clamp(m.v, yMin, yMax)), Math.max(r, 0.1), css('--flag'), true);
+  }
+
+  // Labelled points (e.g. the season peak), shown once the line has drawn past them.
+  for (const a of annotations) {
+    if (a.i / (n - 1) > progress) continue;
+    const ax = x(a.i);
+    const ay = y(clamp(a.v, yMin, yMax));
+    ringDot(ctx, ax, ay, 4.5, css('--text'), false);
+    ctx.font = font(11, 700);
+    const tw = ctx.measureText(a.label).width + 14;
+    const bx = clamp(ax - tw / 2, pad.l + 2, pad.l + pw - tw - 2);
+    const by = ay - 30 < pad.t ? ay + 10 : ay - 30;
+    ctx.fillStyle = css('--text');
+    ctx.beginPath(); ctx.roundRect(bx, by, tw, 20, 10); ctx.fill();
     ctx.fillStyle = css('--surface');
-    ctx.fill();
-    ctx.strokeStyle = css('--flag');
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(a.label, bx + tw / 2, by + 10.5);
   }
 
   if (hover != null) {
-    ctx.strokeStyle = css('--muted');
-    ctx.setLineDash([3, 3]);
-    ctx.beginPath(); ctx.moveTo(x(hover), pad.t); ctx.lineTo(x(hover), pad.t + ph); ctx.stroke();
-    ctx.setLineDash([]);
+    const hx = Math.round(x(hover)) + 0.5;
+    ctx.strokeStyle = hexA(css('--text'), 0.35);
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(hx, pad.t); ctx.lineTo(hx, pad.t + ph); ctx.stroke();
+    for (const s of series) {
+      const v = s.values[hover];
+      if (v != null) ringDot(ctx, x(hover), y(clamp(v, yMin, yMax)), 4.5, s.color, false);
+    }
   }
 
-  return { indexAt: (px) => clamp(Math.round(((px - pad.l) / pw) * (n - 1)), 0, n - 1) };
+  return {
+    indexAt: (px) => clamp(Math.round(((px - pad.l) / pw) * (n - 1)), 0, n - 1),
+    xAt: x,
+    plot: { left: pad.l, right: pad.l + pw, top: pad.t },
+  };
+}
+
+// Positions a floating tooltip beside the hovered x, flipping to the left near the right edge.
+function placeTip(tip, box, px) {
+  tip.hidden = false;
+  const bw = box.clientWidth;
+  const tw = tip.offsetWidth;
+  const left = px + 14 + tw > bw ? px - 14 - tw : px + 14;
+  tip.style.left = `${clamp(left, 0, bw - tw)}px`;
 }
 
 // ---------- Demo 1: single-day FWI calculator ----------
@@ -326,53 +423,102 @@ function initSeason() {
   const tip = $('#season-tip');
   const summary = $('#season-summary');
   const dry = $('#season-dry');
+  const box = canvas.closest('.chart-box');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let seed = 2026;
   let days = [];
   let hover = null;
+  let progress = 1;
+  let frame = null;
   let chart;
 
   const bands = () => {
     let from = 0;
     return FWI.CLASSES.map((c) => {
-      const b = { from, to: c.max === Infinity ? 999 : c.max, color: css(c.color.slice(4, -1)) };
+      const b = { from, to: c.max === Infinity ? 999 : c.max, color: css(c.color.slice(4, -1)), label: c.name };
       from = c.max; return b;
     });
   };
+  const dateLabel = (d, month = 'short') => d.date.toLocaleDateString('en-CA', { month, day: 'numeric' });
 
   const render = () => {
     const xLabels = [];
     days.forEach((d, i) => { if (d.date.getDate() === 1) xLabels.push({ i, label: MONTHS[d.date.getMonth()] }); });
-    const yMax = Math.max(40, Math.ceil(Math.max(...days.map((d) => d.fwi)) / 10) * 10);
+    const yMax = Math.max(40, Math.ceil((Math.max(...days.map((d) => d.fwi)) + 4) / 10) * 10);
+    const peakI = days.reduce((best, d, i) => (d.fwi > days[best].fwi ? i : best), 0);
     chart = drawChart(canvas, {
-      series: [{ values: days.map((d) => d.fwi), color: css('--accent'), width: 2 }],
-      yMax, bands: bands(), xLabels, yLabel: 'FWI', hover,
+      series: [{ values: days.map((d) => d.fwi), color: css('--accent'), width: 2, area: true }],
+      yMax, bands: bands(), xLabels, yLabel: 'FWI', hover, progress, scanLine: false,
+      annotations: [{ i: peakI, v: days[peakI].fwi, label: `Peak ${fmt(days[peakI].fwi)} · ${dateLabel(days[peakI])}` }],
     });
   };
 
-  const regenerate = () => {
-    days = makeSeason(seed, parseFloat(dry.value));
+  // Draws the season in from left to right.
+  const play = () => {
+    cancelAnimationFrame(frame);
+    if (reduced) { progress = 1; render(); return; }
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min((now - start) / 1300, 1);
+      progress = 1 - (1 - t) ** 3;
+      render();
+      if (t < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+  };
+
+  const summarize = () => {
     const counts = FWI.CLASSES.map((c) => ({ c, n: days.filter((d) => FWI.dangerClass(d.fwi) === c).length }));
     const peak = days.reduce((a, b) => (b.fwi > a.fwi ? b : a));
-    summary.innerHTML = `<p>Peak FWI <b>${fmt(peak.fwi)}</b> on ${peak.date.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' })} · season-end DC <b>${fmt(days.at(-1).dc, 0)}</b></p>`
-      + '<ul class="class-counts">' + counts.map(({ c, n }) => `<li><i style="background:${c.color}"></i>${c.name}<b>${n}</b></li>`).join('') + '</ul>';
-    render();
+    const highPlus = counts.slice(2).reduce((a, { n }) => a + n, 0);
+    summary.innerHTML = `
+      <div class="season-stats">
+        <div class="sstat"><span>Peak FWI</span><b>${fmt(peak.fwi)}</b><small>${dateLabel(peak, 'long')} · ${FWI.dangerClass(peak.fwi).name}</small></div>
+        <div class="sstat"><span>Days rated High or above</span><b>${highPlus}</b><small>of ${days.length} days in the season</small></div>
+        <div class="sstat"><span>Season-end Drought Code</span><b>${fmt(days.at(-1).dc, 0)}</b><small>${level('dc', days.at(-1).dc).text}</small></div>
+      </div>
+      <div class="dist" role="img" aria-label="${counts.map(({ c, n }) => `${c.name} ${n} days`).join(', ')}">
+        ${counts.filter(({ n }) => n).map(({ c, n }) => `<i style="flex:${n};background:${c.color}" title="${c.name}: ${n} days"></i>`).join('')}
+      </div>
+      <ul class="class-counts">${counts.map(({ c, n }) => `<li><i style="background:${c.color}"></i>${c.name}<b>${n}</b></li>`).join('')}</ul>`;
+  };
+
+  const regenerate = (animate) => {
+    days = makeSeason(seed, parseFloat(dry.value));
+    summarize();
+    if (animate) play(); else { progress = 1; render(); }
   };
 
   canvas.addEventListener('pointermove', (e) => {
+    if (progress < 1) return;
     const rect = canvas.getBoundingClientRect();
     hover = chart.indexAt(e.clientX - rect.left);
     const d = days[hover];
-    tip.hidden = false;
-    tip.innerHTML = `<b>${d.date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}</b> · ${fmt(d.temp)}°C, ${fmt(d.rh, 0)}% RH, ${fmt(d.wind, 0)} km/h, ${fmt(d.rain)} mm<br>`
-      + `FFMC ${fmt(d.ffmc)} · DMC ${fmt(d.dmc)} · DC ${fmt(d.dc, 0)} · ISI ${fmt(d.isi)} · BUI ${fmt(d.bui)} · <b>FWI ${fmt(d.fwi)}</b>`;
+    const cls = FWI.dangerClass(d.fwi);
+    tip.innerHTML = `<div class="tip-head"><b>${dateLabel(d, 'long')}</b><span class="tip-chip" style="--chip:${cls.color}">${cls.name}</span></div>
+      <div class="tip-big">FWI <b>${fmt(d.fwi)}</b></div>
+      <div class="tip-row">${fmt(d.temp)} °C · ${fmt(d.rh, 0)}% RH · ${fmt(d.wind, 0)} km/h · ${fmt(d.rain)} mm rain</div>
+      <div class="tip-row muted">FFMC ${fmt(d.ffmc)} · DMC ${fmt(d.dmc)} · DC ${fmt(d.dc, 0)} · ISI ${fmt(d.isi)} · BUI ${fmt(d.bui)}</div>`;
     render();
+    placeTip(tip, box, chart.xAt(hover));
   });
   canvas.addEventListener('pointerleave', () => { hover = null; tip.hidden = true; render(); });
-  dry.addEventListener('input', regenerate);
-  $('#season-new').addEventListener('click', () => { seed = Math.floor(Math.random() * 1e9); regenerate(); });
+  dry.addEventListener('input', () => regenerate(false));
+  $('#season-new').addEventListener('click', () => { seed = Math.floor(Math.random() * 1e9); regenerate(true); });
   window.addEventListener('resize', render);
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-  regenerate();
+
+  regenerate(false);
+  if (!reduced && 'IntersectionObserver' in window) {
+    progress = 0;
+    render();
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      play();
+    }, { threshold: 0.4 });
+    io.observe(canvas);
+  }
 }
 
 // ---------- Demo 3: data quality checks on a fire weather station feed ----------
@@ -409,9 +555,11 @@ function makeStationFeed(seed) {
 
 function runChecks({ temp, rh, hours }) {
   const flags = { temp: new Set(), rh: new Set() };
+  const reasons = new Map(); // hour -> check names that failed there, for the tooltip
+  const why = (i, text) => { if (!reasons.has(i)) reasons.set(i, []); reasons.get(i).push(text); };
   const results = [];
   const add = (rule, field, desc, failed) => {
-    failed.forEach((i) => flags[field].add(i));
+    failed.forEach((i) => { flags[field].add(i); why(i, `${rule}: ${desc}`); });
     results.push({ rule, field, desc, failed: failed.length });
   };
   const idx = (arr, fn) => arr.flatMap((v, i) => (fn(v, i) ? [i] : []));
@@ -462,8 +610,9 @@ function runChecks({ temp, rh, hours }) {
   });
   // Counted per day rather than per hour, and charted on the daily median.
   results.push({ rule: 'Drift', field: 'temp', desc: 'Daily median within 3σ of prior 7-day baseline', failed: driftDays.length, unit: 'days' });
+  driftDays.forEach((d) => { for (let i = d * 24; i < d * 24 + 24; i++) why(i, 'Drift: daily median outside 3σ of the prior week'); });
 
-  return { results, flags, driftDays, dailyMean };
+  return { results, flags, reasons, driftDays, dailyMean };
 }
 
 function initQuality() {
@@ -477,23 +626,66 @@ function initQuality() {
   let progress = 0;
   let frame = null;
   let timers = [];
+  let hover = null;
+  let charts = [];
+
+  // Runs of 3+ consecutive flagged or missing hours are shaded as spans; single faults get a dot.
+  const spansFor = (field, arr) => {
+    const hit = new Set(checked.flags[field]);
+    arr.forEach((v, i) => { if (v == null) hit.add(i); });
+    if (field === 'temp') checked.driftDays.forEach((d) => { for (let i = d * 24; i < d * 24 + 24; i++) hit.add(i); });
+    const idx = [...hit].sort((a, b) => a - b);
+    const spans = [];
+    let s = null;
+    for (const i of idx) {
+      if (s && i === s.to + 1) s.to = i;
+      else { s = { from: i, to: i }; spans.push(s); }
+    }
+    return spans.filter((r) => r.to - r.from >= 2);
+  };
 
   const render = () => {
     const xLabels = [];
     for (let d = 0; d < feed.hours / 24; d += 3) xLabels.push({ i: d * 24, label: `Day ${d + 1}` });
     const mark = (field, arr) => [...checked.flags[field]].filter((i) => arr[i] != null).map((i) => ({ i, v: arr[i] }));
-    const tMarks = mark('temp', feed.temp);
+    const tSpans = spansFor('temp', feed.temp);
+    const rSpans = spansFor('rh', feed.rh);
+    const inSpan = (spans) => (m) => !spans.some((s) => m.i >= s.from && m.i <= s.to);
+    const tMarks = mark('temp', feed.temp).filter(inSpan(tSpans));
     // Mark drift on the day's median, which is what the rule tested.
     checked.driftDays.forEach((d) => tMarks.push({ i: d * 24 + 12, v: checked.dailyMean[d] }));
-    drawChart(tChart, {
-      series: [{ values: feed.temp, color: css('--accent'), width: 1.5 }],
-      yMin: 0, yMax: 50, xLabels, yLabel: '°C', marks: tMarks.filter((m) => m.v != null), progress,
-    });
-    drawChart(rChart, {
-      series: [{ values: feed.rh, color: css('--accent-2'), width: 1.5 }],
-      yMin: 0, yMax: 110, xLabels, yLabel: '% RH', marks: mark('rh', feed.rh), progress,
-    });
+    charts = [
+      drawChart(tChart, {
+        series: [{ values: feed.temp, color: css('--accent'), width: 1.5, area: true }],
+        yMin: 0, yMax: 50, xLabels, yLabel: '°C', marks: tMarks.filter((m) => m.v != null), spans: tSpans, progress, hover,
+      }),
+      drawChart(rChart, {
+        series: [{ values: feed.rh, color: css('--accent-2'), width: 1.5, area: true }],
+        yMin: 0, yMax: 110, xLabels, yLabel: '% RH', marks: mark('rh', feed.rh).filter(inSpan(rSpans)), spans: rSpans, progress, hover,
+      }),
+    ];
   };
+
+  // Shared hover: the crosshair follows on both charts; the tooltip sits on the one under the pointer.
+  [tChart, rChart].forEach((canvas, ci) => {
+    const box = canvas.closest('.chart-box');
+    const tip = box.querySelector('.chart-tip');
+    canvas.addEventListener('pointermove', (e) => {
+      if (progress < 1 || !charts[ci]) return;
+      hover = charts[ci].indexAt(e.clientX - canvas.getBoundingClientRect().left);
+      const day = Math.floor(hover / 24) + 1;
+      const hr = String(hover % 24).padStart(2, '0');
+      const t = feed.temp[hover];
+      const r = feed.rh[hover];
+      const issues = checked.reasons.get(hover) || [];
+      tip.innerHTML = `<div class="tip-head"><b>Day ${day}, ${hr}:00</b>${issues.length ? '<span class="tip-chip" style="--chip:var(--flag)">Flagged</span>' : '<span class="tip-chip" style="--chip:var(--pass)">OK</span>'}</div>
+        <div class="tip-row">${t == null ? 'No temperature reading' : `${fmt(t)} °C`} · ${r == null ? 'no humidity reading' : `${fmt(r, 0)}% RH`}</div>
+        ${issues.map((s) => `<div class="tip-row tip-issue">${s}</div>`).join('')}`;
+      render();
+      placeTip(tip, box, charts[ci].xAt(hover));
+    });
+    canvas.addEventListener('pointerleave', () => { hover = null; tip.hidden = true; render(); });
+  });
 
   const finalScore = () => {
     const n = feed.hours;

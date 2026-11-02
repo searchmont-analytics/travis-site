@@ -10,7 +10,7 @@
   <meta property="og:url" content="https://travis-mccormack-analytics.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
   <!-- Bump ?v= whenever css or js changes, so browsers don't pair a new page with cached old files. -->
-  <link rel="stylesheet" href="css/styles.css?v=12">
+  <link rel="stylesheet" href="css/styles.css?v=13">
 </head>
 <body>
 
@@ -433,7 +433,7 @@
         </div>
         <div class="chart-box">
           <canvas id="season-chart" role="img" aria-label="Line chart of daily Fire Weather Index for a synthetic April to September season, shaded by danger class"></canvas>
-          <div class="tip" id="season-tip" hidden></div>
+          <div class="tip chart-tip" id="season-tip" hidden></div>
         </div>
         <div id="season-summary"></div>
       </div>
@@ -447,16 +447,16 @@
               drifting sensor. The checks are the same kinds I run on enterprise data.</p>
           </div>
           <div class="controls">
-            <span class="legend-flag"><i></i>Flagged</span>
+            <span class="legend-flag"><i></i>Fault</span><span class="legend-flag"><i class="span-key"></i>Fault period</span>
             <button class="btn" id="qc-new" type="button">New station feed</button>
           </div>
         </div>
         <div class="qc-grid">
           <div>
             <p class="chart-title">Air temperature (°C)</p>
-            <canvas id="qc-temp" role="img" aria-label="Hourly temperature with flagged records circled"></canvas>
+            <div class="chart-box"><canvas id="qc-temp" role="img" aria-label="Hourly temperature with faults circled and fault periods shaded"></canvas><div class="tip chart-tip" hidden></div></div>
             <p class="chart-title" style="margin-top:12px">Relative humidity (%)</p>
-            <canvas id="qc-rh" role="img" aria-label="Hourly relative humidity with flagged records circled"></canvas>
+            <div class="chart-box"><canvas id="qc-rh" role="img" aria-label="Hourly relative humidity with faults circled and fault periods shaded"></canvas><div class="tip chart-tip" hidden></div></div>
           </div>
           <div>
             <table id="qc-table">
@@ -593,7 +593,7 @@
   </div>
 </footer>
 
-<script src="js/fwi.js?v=12"></script>
-<script src="js/demos.js?v=12"></script>
+<script src="js/fwi.js?v=13"></script>
+<script src="js/demos.js?v=13"></script>
 </body>
 </html>

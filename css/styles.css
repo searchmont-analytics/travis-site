@@ -248,14 +248,14 @@ label small { font-weight: 400; color: var(--muted); font-size: .78rem; line-hei
 input[type=range] { padding: 0; accent-color: var(--accent); }
 .chart-box { position: relative; }
 canvas { width: 100%; display: block; }
-#season-chart { height: 280px; touch-action: none; }
+#season-chart { height: 300px; touch-action: none; }
 #qc-temp, #qc-rh { height: 190px; }
 .tip { font-size: .85rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-variant-numeric: tabular-nums; }
 .tip[hidden] { display: block; visibility: hidden; }
 .class-counts { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .88rem; }
 .class-counts i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
 .class-counts b { margin-left: 6px; font-variant-numeric: tabular-nums; }
-#season-summary p { margin: 12px 0 0; }
+#season-summary { margin-top: 18px; }
 .qc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .chart-title { font-size: .85rem; font-weight: 700; color: var(--muted); margin: 0 0 4px; }
 table { width: 100%; border-collapse: collapse; font-size: .9rem; }
@@ -280,6 +280,42 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 }
 .legend-flag { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--muted); }
 .legend-flag i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--flag); }
+.legend-flag i.span-key { width: 16px; border-radius: 2px; border: 0; border-top: 3px solid color-mix(in srgb, var(--flag) 60%, transparent); background: color-mix(in srgb, var(--flag) 12%, transparent); }
+
+/* Floating chart tooltips */
+.chart-box { position: relative; }
+.tip.chart-tip {
+  position: absolute; top: 6px; z-index: 2; margin: 0; pointer-events: none;
+  min-width: 210px; max-width: 290px; padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 12px 28px -14px rgb(0 0 0 / .35);
+}
+.tip.chart-tip[hidden] { display: none; }
+.tip-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; }
+.tip-chip { font-size: .72rem; font-weight: 800; padding: 1px 8px; border-radius: 999px; color: var(--text); background: color-mix(in srgb, var(--chip) 22%, transparent); border: 1px solid color-mix(in srgb, var(--chip) 55%, transparent); white-space: nowrap; }
+.tip-big { font-size: .85rem; color: var(--muted); }
+.tip-big b { font-size: 1.35rem; color: var(--text); margin-left: 4px; }
+.tip-row { font-size: .8rem; line-height: 1.45; }
+.tip-row.muted { color: var(--muted); }
+.tip-issue { color: var(--flag); font-weight: 600; padding-left: 10px; position: relative; }
+.tip-issue::before { content: ""; position: absolute; left: 0; top: .55em; width: 5px; height: 5px; border-radius: 50%; background: var(--flag); }
+
+/* Season summary */
+.season-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.sstat { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surface-2); }
+.sstat b { margin-top: auto; }
+.sstat span { display: block; font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.sstat b { display: block; font-size: 1.7rem; line-height: 1.2; margin: 2px 0; }
+.sstat small { font-size: .8rem; color: var(--muted); }
+.dist { display: flex; gap: 2px; height: 12px; border-radius: 6px; overflow: hidden; }
+.dist i { min-width: 2px; transition: flex-grow .5s ease; }
+@media (max-width: 640px) {
+  .season-stats { gap: 8px; }
+  .sstat { padding: 10px; }
+  .sstat span { font-size: .62rem; letter-spacing: .04em; }
+  .sstat b { font-size: 1.3rem; }
+  .sstat small { display: none; }
+}
 details { margin-top: 16px; font-size: .92rem; }
 summary { cursor: pointer; font-weight: 700; color: var(--brand); }
 
