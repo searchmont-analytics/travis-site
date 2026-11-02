@@ -782,7 +782,7 @@ function initQuality() {
 // Hero stats count up from zero as each card slides in.
 function initStats() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  document.querySelectorAll('[data-count]').forEach((el) => {
+  document.querySelectorAll('.stat [data-count]').forEach((el) => {
     const target = parseInt(el.dataset.count, 10);
     const delay = (parseFloat(getComputedStyle(el.closest('.stat')).getPropertyValue('--d')) || 0) * 1000 + 150;
     const duration = 1200;
