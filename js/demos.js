@@ -214,7 +214,7 @@ function initCalculator() {
     $('#prev-summary').textContent = `(FFMC ${fmt(prev.ffmc)} · DMC ${fmt(prev.dmc)} · DC ${fmt(prev.dc)})`;
     const cls = FWI.dangerClass(r.fwi);
     out.innerHTML = `
-      <section class="step">
+      <div class="step">
         <div class="step-head"><span class="step-n">2</span><h4>How dry is the forest floor?</h4></div>
         <p class="step-intro">Three moisture codes, one for each layer. Despite the name, <b>higher means drier</b>.
           The deeper the layer, the slower it changes.</p>
@@ -223,16 +223,16 @@ function initCalculator() {
           ${codeCard('dmc', r.dmc, changeText(r.dmc, prev.dmc))}
           ${codeCard('dc', r.dc, changeText(r.dc, prev.dc))}
         </div>
-      </section>
-      <section class="step">
+      </div>
+      <div class="step">
         <div class="step-head"><span class="step-n">3</span><h4>How would a fire behave?</h4></div>
         <p class="step-intro">The codes are combined into two behaviour indices: one for speed, one for fuel.</p>
         <div class="cards cards-2">
           ${codeCard('isi', r.isi, `Made from surface dryness (FFMC ${fmt(r.ffmc)}) and wind (${fmt(obs.wind, 0)} km/h).`)}
           ${codeCard('bui', r.bui, `Made from the middle and deep layers (DMC ${fmt(r.dmc)}, DC ${fmt(r.dc, 0)}).`)}
         </div>
-      </section>
-      <section class="step">
+      </div>
+      <div class="step">
         <div class="step-head"><span class="step-n">4</span><h4>Overall fire danger</h4></div>
         <p class="step-intro">Speed and fuel together give the Fire Weather Index, the number behind public
           fire danger ratings.</p>
@@ -240,7 +240,7 @@ function initCalculator() {
           ${codeCard('fwi', r.fwi, `Made from spread (ISI ${fmt(r.isi)}) and fuel (BUI ${fmt(r.bui)}).`)}
           <div class="class-pill" style="--pill:${cls.color}"><small>Danger class</small>${cls.name}</div>
         </div>
-      </section>`;
+      </div>`;
   };
 
   form.addEventListener('input', () => {
