@@ -260,7 +260,7 @@
             <h3 id="learning-hub">DQ learning portal (mini-LMS)</h3>
             <p class="muted">A complete curriculum, written and built by me, to train data stewards and data
               owners.</p>
-            <ul class="chips"><li>HTML / CSS / JavaScript</li><li>Docker</li><li>nginx</li><li>Instructional design</li></ul>
+            <ul class="chips"><li>Python / Flask</li><li>HTML / CSS / JavaScript</li><li>Docker</li><li>Instructional design</li></ul>
           </div>
           <dl>
             <div><dt>Problem</dt><dd>A data quality program only works if the people who own the data understand
@@ -270,7 +270,7 @@
               and how the enterprise strategy fits together. Lessons combine written guides, scenario-based
               quizzes and progress tracking, plus practice games such as <i>Dirty Record Detective</i>,
               <i>Dimension Sorter</i>, <i>The Cascade Effect</i> and <i>Steward for a Day</i>.</dd></div>
-            <div><dt>Result</dt><dd>A self-paced static site packaged in Docker with nginx. Learner progress,
+            <div><dt>Result</dt><dd>A self-paced Flask web app, packaged in Docker. Learner progress,
               quiz results and feedback feed engagement, mastery and reach dashboards in the Data Quality
               Portal, so the program can see who is learning and where lessons need work.</dd></div>
           </dl>
@@ -278,7 +278,7 @@
             <div class="dq-wrap">
             <svg class="dq play" viewBox="0 0 1200 690" role="img" aria-labelledby="lhT lhD" xmlns="http://www.w3.org/2000/svg">
               <title id="lhT">DQ learning portal (mini-LMS)</title>
-              <desc id="lhD">A complete curriculum, written and built by Travis McCormack, to train data stewards and data owners: 3 modules and 17 lessons with written guides, scenario-based quizzes, progress tracking and practice games (Dirty Record Detective, Dimension Sorter, The Cascade Effect, Steward for a Day). A self-paced static site packaged in Docker with nginx; learner progress, quiz results and feedback feed engagement, mastery and reach dashboards in the Data Quality Portal.</desc>
+              <desc id="lhD">A complete curriculum, written and built by Travis McCormack, to train data stewards and data owners: 3 modules and 17 lessons with written guides, scenario-based quizzes, progress tracking and practice games (Dirty Record Detective, Dimension Sorter, The Cascade Effect, Steward for a Day). A self-paced Flask web app packaged in Docker; learner progress, quiz results and feedback feed engagement, mastery and reach dashboards in the Data Quality Portal.</desc>
               <defs>
                 <linearGradient id="lhBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0d2540"/><stop offset="1" stop-color="#071624"/></linearGradient>
                 <pattern id="lhDots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#17395a"/></pattern>
@@ -299,7 +299,7 @@
                 <line x1="0" y1="58" x2="1200" y2="58" stroke="#2b6a93"/>
                 <rect x="22" y="13" width="18" height="18" rx="4" fill="#3d7ab8"/>
                 <rect x="33" y="24" width="18" height="18" rx="4" fill="#f5c84c"/>
-                <text x="64" y="38" font-size="25" font-weight="700" fill="#fff">HTML · CSS · JS · Docker: DQ learning portal (mini-LMS)</text>
+                <text x="64" y="38" font-size="25" font-weight="700" fill="#fff">Python · Flask · Docker: DQ learning portal (mini-LMS)</text>
               </g>
 
               <!-- Banner -->
@@ -449,7 +449,7 @@
               <circle class="draw" style="--d:6.9s" pathLength="1" cx="879" cy="270" r="17" fill="none" stroke="#3fd0c9" stroke-width="6" transform="rotate(-90 879 270)"/>
               <rect class="type" style="--d:6.9s;animation-duration:1s" x="914" y="276" width="236" height="8" rx="4" fill="#3fd0c9"/>
               <g class="a" style="--d:7.4s">
-                <path class="flow" d="M1166 312 V476" stroke="#3fd0c9" stroke-width="3" marker-end="url(#lhAh)"/>
+                <path class="flow" d="M1166 312 V458" stroke="#3fd0c9" stroke-width="3" marker-end="url(#lhAh)"/>
               </g>
 
               <!-- Practice games -->
@@ -503,14 +503,14 @@
 
               <!-- Packaging -->
               <g class="a" style="--d:9.1s">
-                <text x="430" y="482" font-size="16" font-weight="700" fill="#fff">Self-paced static site</text>
+                <text x="430" y="482" font-size="16" font-weight="700" fill="#fff">Self-paced web app</text>
                 <rect x="430" y="494" width="190" height="96" rx="10" fill="#0f2c47" stroke="#3fd0c9" stroke-width="2"/>
                 <rect x="444" y="503" width="9" height="9" fill="none" stroke="#3fd0c9" stroke-width="1.5"/>
                 <rect x="455" y="503" width="9" height="9" fill="none" stroke="#3fd0c9" stroke-width="1.5"/>
                 <text x="470" y="512" font-size="11.5" font-weight="700" fill="#3fd0c9">Docker container</text>
                 <rect x="444" y="522" width="162" height="26" rx="5" fill="#123f33" stroke="#4cc38a"/>
-                <text x="525" y="540" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e8f1f8">nginx</text>
-                <text x="525" y="572" text-anchor="middle" font-size="11" fill="#9fb6c8">static HTML / CSS / JS</text>
+                <text x="525" y="540" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e8f1f8">Flask app</text>
+                <text x="525" y="572" text-anchor="middle" font-size="11" fill="#9fb6c8">Python · HTML / CSS / JS</text>
               </g>
               <g class="a" style="--d:9.5s">
                 <path class="flow" d="M624 540 H648" stroke="#3fd0c9" stroke-width="2.5" marker-end="url(#lhAh)"/>
@@ -565,7 +565,7 @@
               <g class="a" style="--d:12.4s">
                 <rect x="0" y="638" width="1200" height="52" fill="#0b2238"/>
                 <line x1="0" y1="638" x2="1200" y2="638" stroke="#2b6a93"/>
-                <text x="30" y="670" font-size="15" fill="#e8f1f8">HTML / CSS / JavaScript  <tspan fill="#3fd0c9">·</tspan>  Docker  <tspan fill="#3fd0c9">·</tspan>  nginx  <tspan fill="#3fd0c9">·</tspan>  Instructional design</text>
+                <text x="30" y="670" font-size="15" fill="#e8f1f8">Python / Flask  <tspan fill="#3fd0c9">·</tspan>  HTML / CSS / JavaScript  <tspan fill="#3fd0c9">·</tspan>  Docker  <tspan fill="#3fd0c9">·</tspan>  Instructional design</text>
               </g>
             </svg>
             <button class="dq-replay" type="button">↻ Replay animation</button>
