@@ -369,6 +369,7 @@ summary { cursor: pointer; font-weight: 700; color: var(--brand); }
 .contact .cta { justify-content: center; }
 footer { padding: 28px 0; border-top: 1px solid var(--border); font-size: .85rem; color: var(--muted); }
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+footer .privacy { flex-basis: 100%; font-size: .78rem; }
 
 @media (max-width: 860px) {
   .project, .calc, .qc-grid, .primer, .cards-3, .cards-2, .cards-final { grid-template-columns: 1fr; }
