@@ -181,6 +181,11 @@ input, select {
   border: 1px solid var(--border); background: var(--bg); color: var(--text); width: 100%;
 }
 input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.demo-note { max-width: 78ch; margin: 8px auto 0; padding: 22px 26px; border-radius: var(--radius); background: var(--surface); border: 1px dashed color-mix(in srgb, var(--brand) 40%, var(--border)); }
+.demo-note h3 { font-size: 1.05rem; margin-bottom: .6em; }
+.demo-note p { color: var(--muted); font-size: .95rem; }
+.demo-note p:last-child { margin-bottom: 0; color: var(--text); }
+
 /* FWI tutorial */
 .demo-head p.lms-note { margin-top: 10px; padding: 8px 12px; font-size: .92rem; border-left: 3px solid var(--brand); background: var(--surface-2); border-radius: 0 8px 8px 0; }
 h4 { margin: 0; font-size: 1.05rem; }
