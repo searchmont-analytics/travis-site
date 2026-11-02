@@ -386,3 +386,51 @@ footer .privacy { flex-basis: 100%; font-size: .78rem; }
   .wrap { padding: 0 16px; }
   .project, .demo { padding: 18px; }
 }
+
+/* Animated learning portal graphic */
+.dq-wrap{margin:0}
+  .dq-wrap svg{width:100%;height:auto;display:block;border-radius:12px;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+  .dq-replay{display:block;margin:12px auto 0;background:transparent;color:#3fd0c9;border:1px solid #3fd0c9;border-radius:999px;padding:7px 18px;font:600 14px "Segoe UI",system-ui,sans-serif;cursor:pointer}
+  .dq-replay:hover{background:rgba(63,208,201,.12)}
+
+  .dq .a{opacity:0}
+  .dq.play .a{animation:dqFade .7s ease-out var(--d,0s) forwards}
+  .dq .pop,.dq .shake{transform-box:fill-box;transform-origin:center}
+  .dq .shake{transform-origin:50% 0}
+  .dq.play .pop{animation-name:dqPop;animation-duration:.6s}
+  .dq.play .shake{animation:dqFade .6s ease-out var(--d) forwards, dqShake .45s ease-in-out calc(var(--d) + .7s) 2}
+  .dq.play .blink{animation:dqFade .5s ease-out var(--d) forwards, dqBlink 1.3s ease-in-out calc(var(--d) + .5s) infinite}
+  .dq .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .dq.play .draw{animation:dqDraw 1.8s ease-in-out var(--d) forwards}
+  .dq .type{transform-box:fill-box;transform-origin:0 50%;transform:scaleX(0)}
+  .dq.play .type{animation:dqType .7s steps(10) var(--d) forwards}
+  .dq .grow{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0)}
+  .dq.play .grow{animation:dqGrow .6s ease-out var(--d) forwards}
+  .dq .flow{stroke-dasharray:7 7;animation:dqFlow .9s linear infinite}
+  .dq .spin{transform-box:view-box;transform-origin:600px 280px;animation:dqSpin 16s linear infinite}
+  .dq .cursor{animation:dqBlink 1s steps(2) infinite}
+  .dq .pulse{animation:dqBlink 1.2s ease-in-out infinite}
+  .dq .bob{transform-box:fill-box;animation:dqBob 2.4s ease-in-out infinite}
+  .dq .scan{transform-box:fill-box;animation:dqScan 2.8s ease-in-out infinite}
+  .dq .drop{transform-box:fill-box;animation:dqDrop 1.8s ease-in infinite}
+
+  @keyframes dqFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes dqPop{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+  @keyframes dqShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+  @keyframes dqBlink{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes dqDraw{to{stroke-dashoffset:0}}
+  @keyframes dqType{to{transform:scaleX(1)}}
+  @keyframes dqGrow{to{transform:scaleY(1)}}
+  @keyframes dqFlow{to{stroke-dashoffset:-14}}
+  @keyframes dqSpin{to{transform:rotate(360deg)}}
+  @keyframes dqBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  @keyframes dqScan{0%,100%{transform:translateX(0)}50%{transform:translateX(-10px)}}
+  @keyframes dqDrop{0%{transform:translateY(0);opacity:0}15%{opacity:1}80%{transform:translateY(18px);opacity:1}100%{transform:translateY(18px);opacity:0}}
+
+  @media (prefers-reduced-motion:reduce){
+    .dq .a{opacity:1!important;animation:none!important;transform:none!important}
+    .dq .draw{stroke-dashoffset:0!important;animation:none!important}
+    .dq .type,.dq .grow{transform:none!important;animation:none!important}
+    .dq .spin,.dq .flow,.dq .cursor,.dq .pulse,.dq .bob,.dq .scan,.dq .drop{animation:none!important}
+    .dq-replay{display:none}
+  }
