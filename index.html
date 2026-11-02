@@ -9,7 +9,8 @@
   <meta property="og:description" content="Python data quality frameworks, statistical monitoring and fire weather analytics.">
   <meta property="og:url" content="https://travis-mccormack-analytics.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- Bump ?v= whenever css or js changes, so browsers don't pair a new page with cached old files. -->
+  <link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 <body>
 
@@ -129,6 +130,10 @@
             <div><dt>Result</dt><dd>Data quality coverage continued through the tool migration. Adding a CDE means
               adding a config entry, not writing a new script.</dd></div>
           </dl>
+          <figure class="shot">
+            <img src="img/dq-framework-overview.jpg" alt="Infographic of the config-driven data quality framework: the problem, a YAML config driving a Python framework on Cloudera AI, tier-based completeness thresholds, a CLI that returns a failing exit code for alerting, testing on SQLite with seed scripts before moving to Impala and MS SQL Server, and the result of continued coverage" loading="lazy" width="1024" height="559">
+            <figcaption>Overview of the framework: problem, approach, testing and result.</figcaption>
+          </figure>
         </article>
 
         <article class="project">
@@ -500,7 +505,7 @@
   </div>
 </footer>
 
-<script src="js/fwi.js"></script>
-<script src="js/demos.js"></script>
+<script src="js/fwi.js?v=2"></script>
+<script src="js/demos.js?v=2"></script>
 </body>
 </html>
