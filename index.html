@@ -10,7 +10,7 @@
   <meta property="og:url" content="https://travis-mccormack-analytics.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 5c3 5 7 7 7 13a7 7 0 0 1-14 0c0-4 2-6 4-8 0 3 1 4 3 5 0-4-1-7 0-10z' fill='%23f97c3c'/%3E%3C/svg%3E">
   <!-- Bump ?v= whenever css or js changes, so browsers don't pair a new page with cached old files. -->
-  <link rel="stylesheet" href="css/styles.css?v=16">
+  <link rel="stylesheet" href="css/styles.css?v=17">
 </head>
 <body>
 
@@ -108,16 +108,88 @@
     <div class="wrap">
       <div class="eyebrow">Selected project work</div>
       <h2>Projects</h2>
-      <p class="section-intro">A personal GIS project for my local fire department, followed by recent work from my
-        role as Senior Data Quality Analyst at OLG. The OLG code and data belong to OLG, so those are summaries of
-        the design and results. The <a href="#demos">demos below</a> show the same methods applied to fire weather
-        data.</p>
+      <p class="section-intro">Three personal projects from the Searchmont area north of Sault Ste. Marie, all public
+        with their source code: two fire protection research projects and a computer vision tool built to support a
+        local non-profit. They are followed by recent work from my role as Senior Data Quality Analyst at OLG. The OLG
+        code and data belong to OLG, so those are summaries of the design and results. The <a href="#demos">demos
+        below</a> show the same methods applied to fire weather data.</p>
 
+      <div class="project-group"><h3>LiDAR, GIS and image analysis</h3><p>Personal projects · public source</p></div>
       <div class="projects">
 
-        <article class="project featured">
+        <article class="project featured" id="p-lidar">
           <div>
-            <span class="tag">GIS · Fire protection planning · Personal project</span>
+            <div class="proj-badge hiz-badge" role="img" aria-label="Home Ignition Zone assessment badge: a house with a flame, inside rings at 10 and 30 metres">
+              <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+                <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" opacity=".45"/>
+                <circle cx="32" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".7"/>
+                <circle cx="32" cy="32" r="13" class="hiz-core"/>
+                <path d="M24 34 L32 27 L40 34 V41 H24 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M32 40 c-3 0 -4 -2.2 -3.2 -4.2 c.6 -1.4 1.8 -2 1.9 -3.6 c1.9 1.1 2.4 2.6 2.1 3.8 c.7 -.4 1.1 -1 1.2 -1.8 c1.2 1.3 1.4 2.6 1 3.6 c-.5 1.3 -1.6 2.2 -3 2.2 Z" class="hiz-flame"/>
+              </svg>
+              <div>
+                <strong>Home Ignition Zone assessment</strong>
+                <span>Rings at 1.5–10 m · 10–30 m</span>
+              </div>
+            </div>
+            <span class="tag">Fire protection research · LiDAR · Point cloud analysis</span>
+            <h3>FireSmart LiDAR neighbourhood assessment</h3>
+            <p class="muted">Scores every house in an airborne LiDAR tile against the FireSmart Home Ignition Zone,
+              using canopy and ladder fuel measured directly from the point cloud.</p>
+            <p class="cite-note">Scoring follows the <a href="https://firesmartcanada.ca/" target="_blank" rel="noopener">FireSmart Canada</a>
+              Home Ignition Zone guidance, measured in the 1.5–10 m and 10–30 m zones around the home. This is an independent
+              project, not affiliated with or endorsed by FireSmart Canada.</p>
+            <ul class="chips"><li>Python</li><li>laspy / LAZ</li><li>NumPy · SciPy</li><li>Shapely · pyproj</li><li>Ontario classified point cloud</li><li>YAML config</li><li>Leaflet</li></ul>
+            <div class="cta">
+              <a class="btn primary" href="https://searchmont-analytics.github.io/smt-firesmart-assessment-lidar/" target="_blank" rel="noopener">Open the demo map ↗</a>
+              <a class="btn" href="https://searchmont-analytics.github.io/smt-firesmart-assessment-lidar/searchmont-2024.html" target="_blank" rel="noopener" title="Real 2024 results; password-protected">2024 Searchmont map 🔒</a>
+              <a class="btn" href="https://github.com/searchmont-analytics/smt-firesmart-assessment-lidar" target="_blank" rel="noopener">View source</a>
+            </div>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Most wildfire home losses start in the 30 m around the house. Walking every lot to
+              assess vegetation is slow, but Ontario's classified LiDAR already holds the structure of every tree and
+              shrub near every building.</dd></div>
+            <div><dt>Approach</dt><dd>Reads LAS 1.4 / LAZ tiles, filters noise, water and bridge classes, interpolates a
+              DTM from ground returns and computes height above ground for every point. On a 1 m grid it maps canopy
+              (vegetation ≥ 3 m) and ladder fuel (returns 1–4 m). Buildings come from class 6 or are detected from
+              geometry: smooth, single-return roof cells with a compactness test. Each house gets canopy and ladder
+              percentages for the 1.5–10 m and 10–30 m rings, overhanging branches and slope.</dd></div>
+            <div><dt>Quality control</dt><dd>A synthetic tile (~4.3 M points) ships with known truth for every lot:
+              14 of 14 houses found from geometry alone within ~1 m, Spearman −0.98 between yard management and score.
+              The report states the bias openly: canopy reads ~7 points high where crown edges spill into cells, and
+              ladder fuel ~7 points low where dense crowns hide low branches. Every threshold lives in one config file,
+              and point-density settings were retuned for the ~20 pts/m² 2024 lift.</dd></div>
+            <div><dt>Result</dt><dd>A one-click Windows run downloads and processes 111 one-kilometre tiles of the 2024
+              Sault Ste. Marie lift along the Searchmont corridor (about 18 GB) and scores 603 houses across Deroche,
+              Hodgins, Gaudette and Shields townships. <a href="https://searchmont-analytics.github.io/smt-firesmart-assessment-lidar/searchmont-2024.html" target="_blank" rel="noopener">That map</a> is password-protected, since property-level results
+              belong to the owner. The public demo uses the synthetic tile.</dd></div>
+          </dl>
+          <figure class="shot">
+            <a href="https://searchmont-analytics.github.io/smt-firesmart-assessment-lidar/" target="_blank" rel="noopener"><img src="img/firesmart-demo.png" alt="Demo map of a synthetic LiDAR tile: canopy height shaded green over a rural road, with houses labelled P01 to P14 and coloured by risk rating, beside a table of Zone 1 and Zone 2 canopy and ladder fuel percentages and scores" loading="lazy" width="752" height="422"></a>
+            <figcaption>Public demo on the synthetic tile: canopy height from the point cloud, houses coloured by
+              rating, zone metrics in the side panel. Click to open the map.</figcaption>
+          </figure>
+        </article>
+
+        <article class="project featured" id="p-water">
+          <div>
+            <div class="proj-badge water-badge" role="img" aria-label="Rural water supply atlas badge: a water drop over a hydrant, joined to a house by a road route">
+              <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+                <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".45"/>
+                <path d="M14 46 C22 46 22 34 32 34 S42 22 50 22" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3" stroke-linecap="round" opacity=".8"/>
+                <path d="M45 24 L50 19.5 L55 24 V29 H45 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <rect x="11" y="40" width="6" height="11" rx="1.5" fill="#d6453d"/>
+                <rect x="9" y="43" width="10" height="2.6" rx="1.3" fill="#d6453d"/>
+                <path d="M11 40 a3 3 0 0 1 6 0 Z" fill="#d6453d"/>
+                <path d="M32 12 C32 12 25 20.5 25 25 a7 7 0 0 0 14 0 C39 20.5 32 12 32 12 Z" class="water-drop"/>
+              </svg>
+              <div>
+                <strong>Rural water supply atlas</strong>
+                <span>Built with the Searchmont Fire Department</span>
+              </div>
+            </div>
+            <span class="tag">Fire protection research · GIS · Network analysis</span>
             <h3>Searchmont water source evaluation atlas</h3>
             <p class="muted">An interactive map for planning rural firefighting water supply in the Searchmont
               Fire Department response area, north of Sault Ste. Marie.</p>
@@ -151,6 +223,80 @@
               clusters. Click to open the live map.</figcaption>
           </figure>
         </article>
+
+        <article class="project" id="p-vision">
+          <div>
+            <div class="proj-badge lift-badge" role="img" aria-label="Lift rider counting badge: a chairlift chair with two riders on a cable, crossing a counting gate">
+              <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+                <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".45"/>
+                <path d="M6 22 L58 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M30 18.4 V30" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M19 30 H41 M19 30 V40 H41 V30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <circle cx="25" cy="33" r="2.6" class="lift-rider"/><circle cx="35" cy="33" r="2.6" class="lift-rider"/>
+                <path d="M22 41 L28 41 M32 41 L38 41" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <rect x="21.5" y="30.5" width="7" height="11" rx="1" fill="none" stroke="#39c07a" stroke-width="1.2"/>
+                <rect x="31.5" y="30.5" width="7" height="11" rx="1" fill="none" stroke="#39c07a" stroke-width="1.2"/>
+                <path d="M47 26 V54" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2.5" opacity=".8"/>
+              </svg>
+              <div>
+                <strong>Lift rider counting</strong>
+                <span>Built to help Searchmont Resort</span>
+              </div>
+            </div>
+            <span class="tag">Non-profit support · Computer vision · Deep learning</span>
+            <h3>Lift Vision Lab</h3>
+            <p class="muted">A browser-only computer vision lab in two versions. V1 counts and classifies riders
+              in synthetic footage with hand-built pixel analysis and scores itself against ground truth. V2 runs
+              a pretrained TensorFlow neural network on real chairlift video, frame by frame, and counts the
+              people it tracks.</p>
+            <ul class="chips"><li>TensorFlow.js</li><li>COCO-SSD object detection</li><li>Real video analysis</li><li>Multi-object tracking</li><li>Canvas pixel analysis</li><li>Precision / recall</li><li>Human review loop</li></ul>
+            <div class="cta">
+              <a class="btn primary" href="https://searchmont-analytics.github.io/Lift_vision_lab/v2.html" target="_blank" rel="noopener">Try V2: real footage ↗</a>
+              <a class="btn" href="https://searchmont-analytics.github.io/Lift_vision_lab/" target="_blank" rel="noopener">V1: synthetic demo ↗</a>
+              <a class="btn" href="https://github.com/searchmont-analytics/Lift_vision_lab" target="_blank" rel="noopener">View source</a>
+            </div>
+          </div>
+          <dl>
+            <div><dt>Problem</dt><dd>Counting and classifying what a camera sees, reliably enough to report on,
+              without hiding where the method fails.</dd></div>
+            <div><dt>V1: rules on synthetic frames</dt><dd>Reads rendered frame pixels, extracts connected dark
+              silhouettes inside an analysis band, links detections into tracks and counts each one once as it
+              clears a gate. Silhouette geometry gives an equipment class and a colour cue flags patrol. Events are
+              matched one-to-one against ground truth within 0.5 s and 18 px. Baseline: 12 of 12, 100% precision
+              and recall. Stress scenario with snow, occlusion and low contrast: 100% precision, 83.3% recall, with
+              each miss explained.</dd></div>
+            <div><dt>V2: neural network on real footage</dt><dd>Loads TensorFlow.js and the COCO-SSD detector in
+              the browser and samples the video every 0.2 s. Person detections inside a user-drawn region of
+              interest are linked into tracks with a velocity-predicted nearest-neighbour match. Each track is
+              counted once after three detections, or as it crosses a configurable gate. Coat colour is estimated
+              from the upper body by majority vote across frames. On the 15-skier sample clip it counted 14,
+              and the summary reports the difference from the manual count rather than hiding it.</dd></div>
+            <div><dt>Review and honesty</dt><dd>In both versions a reviewer can open any event's frame, accept or
+              reject the count, correct labels and export CSV. The page states the known failure modes: long
+              occlusion can split one person into two tracks, and a person detection may be a bystander. All
+              processing stays on the device. The README sets out a pilot plan with independent second-reviewer
+              labelling, held-out footage and acceptance gates.</dd></div>
+            <div><dt>Why it matters here</dt><dd>The same disciplines apply to any automated detection a fire
+              program might rely on, from smoke in camera feeds to features in aerial imagery: pick a pretrained
+              model or a hand-built rule, define the class, measure it against reviewed truth, report precision and
+              recall by condition, and keep a human in the loop for the uncertain cases.</dd></div>
+          </dl>
+          <div class="shot-pair">
+            <figure class="shot plain">
+              <a href="https://searchmont-analytics.github.io/Lift_vision_lab/v2.html" target="_blank" rel="noopener"><img src="img/lift-vision-v2.webp" alt="Lift Vision Lab V2 on real chairlift footage: four skiers unloading, each boxed by the COCO-SSD detector with person confidence between 92 and 97 percent" loading="lazy" width="600" height="500"></a>
+              <figcaption>V2 on real footage: the TensorFlow.js detector boxes four unloading riders at 92–97% confidence.</figcaption>
+            </figure>
+            <figure class="shot plain">
+              <a href="https://searchmont-analytics.github.io/Lift_vision_lab/" target="_blank" rel="noopener"><img src="img/lift-vision-lab.png" alt="Lift Vision Lab V1 running the baseline synthetic sample: chairs move left to right past a vertical gate line, with detected riders boxed and labelled skier, snowboarder, adaptive and unknown" loading="lazy" width="600" height="500"></a>
+              <figcaption>V1 on synthetic footage: tracked riders, class labels and the counting gate.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="project-group" id="p-dq"><h3>Data quality and quality control</h3><p>Senior Data Quality Analyst · OLG</p></div>
+      <div class="projects">
 
         <article class="project">
           <div>

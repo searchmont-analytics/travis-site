@@ -454,3 +454,31 @@ footer .privacy { flex-basis: 100%; font-size: .78rem; }
     .dq .spin,.dq .flow,.dq .cursor,.dq .pulse,.dq .bob,.dq .scan,.dq .drop{animation:none!important}
     .dq-replay{display:none}
   }
+
+/* Project groups and badges, shared with the forestry analytics site */
+.project-group { margin: 44px 0 16px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.project-group:first-of-type { margin-top: 0; }
+.project-group h3 { font-size: 1.05rem; margin: 0; }
+.project-group p { margin: 0; color: var(--muted); font-size: .92rem; }
+.shot.plain img { max-height: 520px; object-fit: contain; background: var(--surface-2); }
+.shot-pair { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.shot-pair .shot { grid-column: auto; }
+@media (max-width: 700px) { .shot-pair { grid-template-columns: 1fr; } }
+.proj-badge { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 8px 14px 8px 8px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); color: var(--accent); width: fit-content; max-width: 100%; }
+.proj-badge svg { flex: none; }
+.proj-badge strong { display: block; font-size: .9rem; color: var(--text); line-height: 1.25; }
+.proj-badge span { display: block; font-size: .78rem; color: var(--muted); }
+.hiz-badge .hiz-core { fill: color-mix(in srgb, var(--accent) 16%, transparent); stroke: currentColor; stroke-width: 1.6; }
+.hiz-badge .hiz-flame { fill: #f59e0b; stroke: #b45309; stroke-width: .6; }
+.cite-note { font-size: .82rem; color: var(--muted); margin: 6px 0 12px; }
+.water-badge { color: #2f6fd6; }
+.water-badge .water-drop { fill: color-mix(in srgb, currentColor 30%, transparent); stroke: currentColor; stroke-width: 1.6; }
+.lift-badge { color: #4b5f73; }
+.lift-badge .lift-rider { fill: currentColor; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .water-badge { color: #6aa5ff; }
+  :root:not([data-theme="light"]) .lift-badge { color: #a9bccd; }
+}
+:root[data-theme="dark"] .water-badge { color: #6aa5ff; }
+:root[data-theme="dark"] .lift-badge { color: #a9bccd; }
